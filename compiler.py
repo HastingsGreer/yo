@@ -11,6 +11,7 @@ program_file = re.sub(r"([0-9]+)", r"\1,", program_file)
 program_file = "(" + re.sub("\\)", "),", program_file) + ")"
 program = eval(program_file)
 
+
 def iprint(*x):
     if re.match("^.L.:$", x[0]):
         print(*x)
@@ -98,6 +99,8 @@ class Instr:
         iprint("movq " + a + ", %rax")
         iprint(self.name + "q " + b + ", %rax")
         return stackpush("%rax")
+
+
 class If:
     def __init__(self):
         self.name = "if"
@@ -137,78 +140,65 @@ def call(fname, *args):
         if function.name == fname:
             return function.call(fname, *args)
 
+
 arg0 = "-8(%rbp)"
 arg1 = "-16(%rbp)"
 
-#builtins
+# builtins
 functions = [
     If(),
     Instr("add"),
     Instr("sub"),
-    Function (
+    Function(
         "print",
         1,
         [
-	"subq	$16, %rsp",
-        "andq    $0xFFFFFFFFFFFFFFF0, %rsp",
-	"movq	%rdi, -8(%rbp)",
-	"movq	-8(%rbp), %rax",
-	"movq	%rax, %rsi",
-	"leaq	.LC0(%rip), %rax",
-	"movq	%rax, %rdi",
-	"movl	$0, %eax",
-	"call	printf@PLT",
-    "movq $0, %rax",
-    ]),
+            "subq	$16, %rsp",
+            "andq    $0xFFFFFFFFFFFFFFF0, %rsp",
+            "movq	%rdi, -8(%rbp)",
+            "movq	-8(%rbp), %rax",
+            "movq	%rax, %rsi",
+            "leaq	.LC0(%rip), %rax",
+            "movq	%rax, %rdi",
+            "movl	$0, %eax",
+            "call	printf@PLT",
+            "movq $0, %rax",
+        ],
+    ),
     Function(
         "cons",
         2,
         [
-        "subq    $32, %rsp",
-        "andq    $0xFFFFFFFFFFFFFFF0, %rsp",
-        "movq    %rdi, -24(%rbp)",
-        "movq    %rsi, -32(%rbp)",
-        "movl    $16, %edi",
-        "call    malloc@PLT",
-        "movq    %rax, -8(%rbp)",
-        "movq    -24(%rbp), %rdx",
-        "movq    -8(%rbp), %rax",
-        "movq    %rdx, (%rax)",
-        "movq    -8(%rbp), %rax",
-        "leaq    8(%rax), %rdx",
-        "movq    -32(%rbp), %rax",
-        "movq    %rax, (%rdx)",
-        "movq    -8(%rbp), %rax",
-        ]
-        ),
-    Function(
-        "car",
-        1,
-        [
-        "movq    -8(%rbp), %rax",
-        "movq    (%rax), %rax"
-        ]
-        ),
-    Function(
-        "cdr",
-        1,
-        [
-        "movq    -8(%rbp), %rax",
-        "movq    8(%rax), %rax"
-        ]
-        ),
+            "subq    $32, %rsp",
+            "andq    $0xFFFFFFFFFFFFFFF0, %rsp",
+            "movq    %rdi, -24(%rbp)",
+            "movq    %rsi, -32(%rbp)",
+            "movl    $16, %edi",
+            "call    malloc@PLT",
+            "movq    %rax, -8(%rbp)",
+            "movq    -24(%rbp), %rdx",
+            "movq    -8(%rbp), %rax",
+            "movq    %rdx, (%rax)",
+            "movq    -8(%rbp), %rax",
+            "leaq    8(%rax), %rdx",
+            "movq    -32(%rbp), %rax",
+            "movq    %rax, (%rdx)",
+            "movq    -8(%rbp), %rax",
+        ],
+    ),
+    Function("car", 1, ["movq    -8(%rbp), %rax", "movq    (%rax), %rax"]),
+    Function("cdr", 1, ["movq    -8(%rbp), %rax", "movq    8(%rax), %rax"]),
 ]
 
 
-print(
-    """
+print("""
     .text
-    """
-)
+    """)
 
 for sexpr in program:
     if sexpr[0] == "defun":
         name, args, body = sexpr[1:]
+
         def remap(expr):
             ret = []
             for e in expr:
@@ -222,6 +212,7 @@ for sexpr in program:
                     else:
                         ret.append(remap(e))
             return ret
+
         body = remap(body)
         functions.append(Function(name, len(args), [body]))
 
@@ -233,5 +224,3 @@ print("""
 .LC0:
 	.string	"%li "
     """)
-
-
