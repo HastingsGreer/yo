@@ -3,15 +3,12 @@ from dataclasses import dataclass
 
 source = """
 (defun powtwo (a) (if a (add (powtwo (sub a 1)) (powtwo (sub a 1))) 1))
-
-(defun main () (powtwo 5))
-"""
+(defun main () (powtwo 5)) """
 
 source = open("fib.lisp", "r").read()
 program_file = re.sub(r"([A-Za-z+_=\-\?]+[0-9]*)", r"'\1',", source)
 program_file = re.sub(r"([0-9]+)", r"\1,", program_file)
 program_file = "(" + re.sub("\\)", "),", program_file) + ")"
-
 program = eval(program_file)
 
 def iprint(*x):
@@ -85,6 +82,22 @@ class Function:
         return stackpush("%rax")
 
 
+class Instr:
+    def __init__(self, name):
+        self.name = name
+        self.nargs = 2
+
+    def print(self):
+        pass
+
+    def call(self, name, a, b):
+        if type(a) != str:
+            a = call(*a)
+        if type(b) != str:
+            b = call(*b)
+        iprint("movq " + a + ", %rax")
+        iprint(self.name + "q " + b + ", %rax")
+        return stackpush("%rax")
 class If:
     def __init__(self):
         self.name = "if"
@@ -130,6 +143,8 @@ arg1 = "-16(%rbp)"
 #builtins
 functions = [
     If(),
+    Instr("add"),
+    Instr("sub"),
     Function (
         "print",
         1,
@@ -182,23 +197,6 @@ functions = [
         "movq    8(%rax), %rax"
         ]
         ),
-
-    Function(
-        "add",
-        2,
-        [
-            "movq    -8(%rbp), %rax",
-            "addq    -16(%rbp), %rax",
-        ],
-    ),
-    Function(
-        "sub",
-        2,
-        [
-            "movq    -8(%rbp), %rax",
-            "subq    -16(%rbp), %rax",
-        ],
-    ),
 ]
 
 
