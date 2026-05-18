@@ -7,13 +7,7 @@ source = """
 (defun main () (powtwo 5))
 """
 
-source = """
-(defun pos (x) (if x (if (sub 1 x) 1 0) 0))
-(defun fib (x) (if (pos x) (add (fib (sub x 1)) (fib (sub x 2))) 1))
-(defun main () (cdr (cons 5 6)))
-"""
-
-
+source = open("fib.lisp", "r").read()
 program_file = re.sub(r"([A-Za-z+_=\-\?]+[0-9]*)", r"'\1',", source)
 program_file = re.sub(r"([0-9]+)", r"\1,", program_file)
 program_file = "(" + re.sub("\\)", "),", program_file) + ")"
@@ -136,11 +130,27 @@ arg1 = "-16(%rbp)"
 #builtins
 functions = [
     If(),
+    Function (
+        "print",
+        1,
+        [
+	"subq	$16, %rsp",
+        "andq    $0xFFFFFFFFFFFFFFF0, %rsp",
+	"movq	%rdi, -8(%rbp)",
+	"movq	-8(%rbp), %rax",
+	"movq	%rax, %rsi",
+	"leaq	.LC0(%rip), %rax",
+	"movq	%rax, %rdi",
+	"movl	$0, %eax",
+	"call	printf@PLT",
+    "movq $0, %rax",
+    ]),
     Function(
         "cons",
         2,
         [
         "subq    $32, %rsp",
+        "andq    $0xFFFFFFFFFFFFFFF0, %rsp",
         "movq    %rdi, -24(%rbp)",
         "movq    %rsi, -32(%rbp)",
         "movl    $16, %edi",
@@ -219,4 +229,11 @@ for sexpr in program:
 
 for f in functions:
     f.print()
+
+print("""
+	.section	.rodata
+.LC0:
+	.string	"%li "
+    """)
+
 
