@@ -6,4 +6,4 @@
 (defun fibmap (L) (if L (cons (fib (car L)) (fibmap (cdr L))) 0))
 (defun reverse_impl (L acc) (if L (reverse_impl (cdr L) (cons (car L) acc)) acc))
 (defun reverse (L) (reverse_impl L 0))
-(defun main () (print (fib 35)))
+(defun main () (print (fib 7)))

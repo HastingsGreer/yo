@@ -1,8 +1,18 @@
-output.s: compiler.py fib.lisp
-	python3 compiler.py > output.s
+fib.s: compiler.py fib.lisp
+	python3 compiler.py fib.lisp > fib.s
 
-a.out: output.s
-	gcc output.s
+fib: fib.s
+	gcc fib.s -o fib
 
-test: a.out
-	./a.out; echo
+fibtest: fib
+	./fib; echo
+
+
+primes.s: compiler.py primes.lisp
+	python3 compiler.py primes.lisp > primes.s
+
+primes: primes.s
+	gcc primes.s -o primes
+
+primestest: primes
+	./primes; echo
