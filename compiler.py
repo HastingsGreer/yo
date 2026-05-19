@@ -30,7 +30,7 @@ def stackreset():
 def stackpush(yo):
     stck[0] -= 8
     iprint("subq $8, %rsp")
-    loc =  str(stck[0]) + "(%rbp)"
+    loc = str(stck[0]) + "(%rbp)"
     iprint("movq " + yo + ", " + loc)
     return loc
 
