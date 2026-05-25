@@ -8,10 +8,14 @@ source = """
 (defun main () (powtwo 5)) """
 
 source = open(sys.argv[1], "r").read()
-program_file = re.sub(r"([A-Za-z+_=\-\?]+[0-9]*)", r"'\1',", source)
-program_file = re.sub(r"([0-9]+)", r"\1,", program_file)
-program_file = "(" + re.sub("\\)", "),", program_file) + ")"
-program = eval(program_file)
 
+def parse(program_file):
+    program_file = re.sub(r"([A-Za-z+_=\-\?]+[0-9]*)", r"'\1',", source)
+    program_file = re.sub(r"([0-9]+)", r"\1,", program_file)
+    program_file = "(" + re.sub("\\)", "),", program_file) + ")"
+    return eval(program_file)
 
-print(program)
+program = parse(source)
+
+import json
+print(json.dumps(program, indent=2))
