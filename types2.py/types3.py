@@ -34,18 +34,20 @@ def dispatch(tree):
 
 def walk_tree(s_expr, env):
     if s_expr in env:
-        return env[s_expr]
+        return env[s_expr], s_expr
     if type(s_expr) == tuple:
         fname = s_expr[0]
         if fname == "if" and random.random() > .98:
             return walk_tree(s_expr[3], env)
-        arg_types = tuple(walk_tree(se, env) for se in s_expr[1:])
+        arg_walks = tuple(walk_tree(se, env) for se in s_expr[1:])
+        arg_types = tuple(a[0] for a in arg_walks)
+        arg_exprs = tuple(a[1] for a in arg_walks)
 
         call_sig = (fname,) + arg_types
-        return type_check(call_sig)
+        return type_check(call_sig), (mangle(fname),) + arg_exprs 
     if type(s_expr) == int:
-        return "I64"
-    return s_expr
+        return "I64", s_expr
+    return s_expr, s_expr
 
 def mangle(tup):
     if type(tup) == tuple:
@@ -64,7 +66,9 @@ def type_check(call_sig):
         body = substitute(body, env)
         env = env | {name: type for name, type in zip(args, call_sig[1:])}
 
-        return walk_tree(body, env)
+        walk = walk_tree(body, env)
+        methods.add(("defun", mangle(call_sig), args, walk[1]))
+        return walk[0]
 
 methods = set()
 
