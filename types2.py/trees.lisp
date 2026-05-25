@@ -15,10 +15,12 @@
 
 (defun ((map F) (List T)) (l) (if l (cons (F (car l)) ((map F) (cdr l))) (nil (infer (F ((zero T)))))))
 
+(defun (sum (List T)) (l) (if l (add (car l) (sum (cdr l))) ((zero T))))
+
 (defun (add X X) (a b) (sub a (sub 0 b)))
 
 (defun (range T) (n) (if n (cons n (range (sub n 1))) (nil 0)))
 
 (defun (dec T) (x) (sub x 1))
 
-(defun (main) () ((map dec) (range (dec 4))))
+(defun (main) () (sum ((map dec) (range (dec 8)))))

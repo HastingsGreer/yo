@@ -51,7 +51,7 @@ def walk_tree(s_expr, env):
 
 def mangle(tup):
     if type(tup) == tuple:
-        return "<" + "|".join(map(mangle, tup)) + ">"
+        return "x$" + "$_".join(map(mangle, tup)) + "$__"
     return tup
 
 def type_check(call_sig):
@@ -76,9 +76,36 @@ methods = set()
 
 #print("typeof sub", type_check(("sub", "I64", "I64")))
 #print("typeof cast", type_check((("cast", "Horse"), "I64")))
-print("typeof main", type_check(("main",)))
+type_check(("main",))
 
-prog = sorted([str(m).replace("'", "").replace(",","") for m in methods])
+def remove_casts_infer(s_expr):
+    remap_dict = {
+        "x$sub$_I64$_I64$__": "sub",
+        "x$car_$_I64$__": "car",
+        "x$cdr_$_I64$__": "cdr",
+        "x$cdr_$_I64$__": "cdr",
+        "x$cons_$_I64$_I64$__": "cons",
+        }
+    if type(s_expr) == tuple and len(s_expr) > 0:
+        s_expr = list(s_expr)
+        if type(s_expr[0]) == str:
+            if "cast" in s_expr[0]:
+                return remove_casts_infer(s_expr[1])
+            if "infer" in s_expr[0]:
+                return 0
+            if s_expr[0][:5] == "x$if$":
+                s_expr[0] = "if"
+            if s_expr[0] in remap_dict:
+                s_expr[0] = remap_dict[s_expr[0]]
+            return (s_expr[0],) + tuple(remove_casts_infer(t) for t in s_expr[1:])
+    if type(s_expr) == str and s_expr == "x$main$__":
+        return "main"
+    return s_expr
+
+
+        
+
+prog = sorted([str(remove_casts_infer(m)).replace("'", "").replace(",","") for m in methods])
 [print(p) for p in prog if not "FAILFAIL" in p]
 
 
