@@ -142,8 +142,9 @@ def call(fname, *args):
     for function in functions:
         if function.name == fname:
             return function.call(fname, *args)
-    if fname == '$0':
-        return stackpush("$0")
+    if fname[0] == '$' and fname[1:].isdecimal():
+        iprint("movq   " + fname + ", %rax")
+        return stackpush(fname)
 
     raise Exception(fname + " not defined")
 

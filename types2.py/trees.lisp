@@ -26,3 +26,31 @@
 (defun (dec T) (x) (sub x 1))
 
 (defun (main) () (print_ (sum ((map dec) (range (dec 90))))))
+(defun (main) () ((map print_) (reverse(range 10))))
+
+
+(defun (reverse_impl (List T) (List T)) (l acc) (if l (reverse_impl (cdr l) (cons (car l) acc)) acc))
+(defun (reverse T) (l) (reverse_impl l ((nilptr  T))))
+(defun (eq X Y) (a b) (if (sub a b) 0 1))
+(defun (sign_impl X Y) (x minx) 
+  (if (eq x 0) 
+    100 
+    (if (eq minx 0) 
+      101 
+      (sign_impl (sub x 1) (sub minx 1)))))
+(defun (sign X) (x) (sign_impl x (sub 0 x)))
+(defun (mod X Y) (num div) (if (eq (sign (sub num div)) 100) (mod (sub num div) div) num))
+
+(defun (mul X Y) (a b) (if a (add b (mul (sub a 1) b)) 0))
+
+(defun (prime_impl X Y) (prime test) (if (sub test 1) (if (mod prime test) (prime_impl prime (sub test 1)) 0) 1))
+(defun (isprime X) (p) (if (sub p 1) (prime_impl p (sub p 1)) 0))
+
+(defun (primefilt (List I64)) (l) 
+  (if l 
+    (if (isprime (car l)) 
+      (cons (car l) (primefilt (cdr l))) 
+      (primefilt (cdr l))) 
+    (nil 0)))
+
+(defun (main) () ((map print_) (primefilt (range 500))))

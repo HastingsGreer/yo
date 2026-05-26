@@ -41,9 +41,9 @@ def walk_tree(s_expr, env):
         return env[s_expr], s_expr
     if type(s_expr) == tuple:
         fname = s_expr[0]
-        if fname == "if" and random.random() > .8:
+        if fname == "if" and random.random() > .6:
             return walk_tree(s_expr[2], env)[0], "FAILFAIL"
-        if fname == "if" and random.random() > .8:
+        if fname == "if" and random.random() > .6:
             return walk_tree(s_expr[3], env)[0], "FAILFAIL"
         arg_walks = tuple(walk_tree(se, env) for se in s_expr[1:])
         arg_types = tuple(a[0] for a in arg_walks)
@@ -78,7 +78,7 @@ def type_check(call_sig):
 
 methods = set()
 
-for i in range(10):
+for i in range(2):
    type_check(("main",))
 
 def remove_casts_infer(s_expr):
