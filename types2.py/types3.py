@@ -41,9 +41,9 @@ def walk_tree(s_expr, env):
         return env[s_expr], s_expr
     if type(s_expr) == tuple:
         fname = s_expr[0]
-        if fname == "if" and random.random() > .6:
+        if fname == "if" and random.random() > .7:
             return walk_tree(s_expr[2], env)[0], "FAILFAIL"
-        if fname == "if" and random.random() > .6:
+        if fname == "if" and random.random() > .5:
             return walk_tree(s_expr[3], env)[0], "FAILFAIL"
         arg_walks = tuple(walk_tree(se, env) for se in s_expr[1:])
         arg_types = tuple(a[0] for a in arg_walks)
@@ -60,7 +60,10 @@ def mangle(tup):
         return "x$" + "$_".join(map(mangle, tup)) + "$__"
     return tup
 
+memo = {}
 def type_check(call_sig):
+    if call_sig in memo:
+        return memo[call_sig]
     i, fsig, env = dispatch(call_sig)
 
     if program[i][0] == "header":
@@ -73,14 +76,13 @@ def type_check(call_sig):
         env = {name: type for name, type in zip(args, call_sig[1:])}
 
         walk = walk_tree(body, env)
+        #print(walk[1], file=sys.stderr)
+        if not "FAILFAIL" in str(walk[1]):
+            memo[call_sig] = walk[0]
         methods.add(("defun", mangle(call_sig), args, walk[1]))
         return walk[0]
 
 methods = set()
-
-for i in range(2):
-   type_check(("main",))
-
 def remove_casts_infer(s_expr):
     remap_dict = {
         "x$sub$_I64$_I64$__": "sub",
@@ -105,6 +107,15 @@ def remove_casts_infer(s_expr):
     if type(s_expr) == str and s_expr == "x$main$__":
         return "main"
     return s_expr
+
+again = 1
+while again:
+   memo = {}
+   type_check(("main",))
+   n_methods = len(set(m[1] for m in methods))
+   n_filled = len(set(m[1] for m in methods if not "FAILFAIL" in str(m[3])))
+   again = n_methods != n_filled
+
 
 prog = sorted([str(remove_casts_infer(m)).replace("'", "").replace(",","") for m in methods])
 [print(p) for p in prog if not "FAILFAIL" in p]
