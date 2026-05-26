@@ -13,6 +13,7 @@
 (defun ((nilptr T)) () ((cast T) 0))
 (defun ((zero I64)) () ((cast I64) 0))
 (defun (nil T) (x) ((nilptr (List T))))
+(defun ((nil T)) () ((nilptr (List T))))
 
 (defun (cons T (List T)) (e l) ((cast (List T)) (cons_ ((cast I64) e) ((cast I64) l)))) 
 (defun (car (List T)) (l) ((cast T) (car_ ((cast I64) l))))
@@ -22,8 +23,8 @@
 
 (defun ((filter F) (List T)) (l) (if l (if (F (car l)) (cons (car l) ((filter F) (cdr l))) ((filter F) (cdr l))) ((nilptr (List T)))))
 
-(defun add (a b) (sub a (sub 0 b)))
-(defun mul (a b) (if a (add b (mul (sub a 1) b)) 0))
+(defun (add I64 I64) (a b) (sub a (sub 0 b)))
+(defun (mul T T) (a b) (if a (add b (mul (sub a 1) b)) ((zero T))))
 (defun eq (a b) (if (sub a b) 0 1))
 (defun sign_impl  (x minx) (if (eq x 0) 100 (if (eq minx 0) 101 (sign_impl (sub x 1) (sub minx 1)))))
 (defun sign  (x) (sign_impl x (sub 0 x)))

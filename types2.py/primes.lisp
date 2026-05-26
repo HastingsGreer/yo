@@ -10,8 +10,34 @@
 (defun (consint I64) (n) ((cast Consint) ((map zero_) (range n))))
 (defun (len (List T)) (l) (if l (add 1 (len (cdr l))) 0))
 (defun (I64 Consint) (n) (len ((cast (List I64)) n)))
-(defun (dec Consint) (n) ((cast Consint) (cdr ((Cast List) n))))
+(defun (dec Consint) (n) ((cast Consint) (cdr ((cast (List I64)) n))))
 (defun (sub Consint Consint) (a b) (if b (sub (dec a) (dec b)) a))
+(defun (sub Consint I64) (a b) (sub a (consint b)))
+(defun (sub I64 Consint) (a b) (sub (consint a) b))
 
-(defun main () (print_ (I64 (consint 9))))
+(defun main () (print_ (I64 (sub (consint 7) 3))))
+
+(defun (pair T T) (a b) (cons a (cons b ((nil T)))))
+
+(defun ((Signedof T) T T) (a b) ((cast (Signedof T)) (pair a b)))
+(defun (first (Signedof T)) (n) (car ((cast (List T)) n)))
+(defun (second (Signedof T)) (n) (car (cdr ((cast (List T)) n))))
+
+(defun ((Signedof T) I64) (n) ((Signedof T) n 0))
+(defun (I64 (Signedof T)) (n) (sub (first n) (second n)))
+(defun ((zero (Signedof T))) () ((Signedof T) 0))
+
+(defun (normform (Signedof T)) (n) (if (first n) (if (second n) (normform ((Signedof T) (sub (first n) 1) (sub (second n) 1))) n) n))
+
+(defun (add (Signedof T) (Signedof T)) (a b) (normform ((Signedof T) (add (first a) (first b)) (add (second a) (second b)))))
+(defun (sub (Signedof T) (Signedof T)) (a b) (normform ((Signedof T) (add (first a) (second b)) (add (second a) (first b)))))
+
+(defun (sub (Signedof T) I64) (a b) (sub a ((Signedof T) b)))
+(defun (sub I64 (Signedof T)) (a b) (sub ((Signedof T) a) b))
+
+(defun (add (Signedof T) I64) (a b) (add a ((Signedof T) b)))
+
+(defun main () (print_ (I64 (sub ((Signedof I64) 7) (Signedof I64) 3))))
+
+(defun main () (print_ (I64 (mul ((Signedof I64) 0) ((Signedof I64) 0)))))
 
