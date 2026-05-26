@@ -8,7 +8,8 @@
 (header (car_ I64) I64)
 (header (print_ I64) I64)
 (header (cdr_ I64) I64)
-(header (if C T T) T)
+(header (if I64 T T) T)
+(header (if (List Q) T T) T)
 
 (defun ((nilptr T)) () ((cast T) 0))
 (defun ((zero I64)) () ((cast I64) 0))
@@ -24,8 +25,9 @@
 (defun ((filter F) (List T)) (l) (if l (if (F (car l)) (cons (car l) ((filter F) (cdr l))) ((filter F) (cdr l))) ((nilptr (List T)))))
 
 (defun (add I64 I64) (a b) (sub a (sub 0 b)))
-(defun (mul T T) (a b) (if a (add b (mul (sub a 1) b)) ((zero T))))
+(defun (mul T T) (a b) (if (neq a 0) (add b (mul (sub a 1) b)) ((zero T))))
 (defun eq (a b) (if (sub a b) 0 1))
+(defun neq (a b) (if (eq a b) 0 1))
 (defun sign_impl  (x minx) (if (eq x 0) 100 (if (eq minx 0) 101 (sign_impl (sub x 1) (sub minx 1)))))
 (defun sign  (x) (sign_impl x (sub 0 x)))
 (defun mod (num div) (if (eq (sign (sub num div)) 100) (mod (sub num div) div) num))

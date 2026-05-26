@@ -9,6 +9,10 @@ def parse(program_file):
     program_file = "(" + re.sub("\\)", "),", program_file) + ")"
     return eval(program_file)
 
+def lispprint(tup):
+    return str(tup).replace("'", "").replace(",","")
+    
+
 
 import trees
 
@@ -38,8 +42,8 @@ def dispatch(tree, caller):
         res = trees.subset(trees.cons_lists(tree), trees.cons_lists(sig))
         if res is not False:
             return i, sig, res
-    print("caller was", caller)
-    compile_error("No type matches" + str(tree))
+    compile_error("caller was" + lispprint(caller) + "\n" + 
+    "No type matches" + lispprint(tree))
 
 
 
@@ -52,7 +56,7 @@ def walk_tree(s_expr, env, caller=None):
             return walk_tree(s_expr[2], env)[0], "FAILFAIL"
         if fname == "if" and random.random() > .5:
             return walk_tree(s_expr[3], env)[0], "FAILFAIL"
-        arg_walks = tuple(walk_tree(se, env) for se in s_expr[1:])
+        arg_walks = tuple(walk_tree(se, env, caller) for se in s_expr[1:])
         arg_types = tuple(a[0] for a in arg_walks)
         arg_exprs = tuple(a[1] for a in arg_walks)
 
@@ -82,7 +86,7 @@ def type_check(call_sig, caller=None):
         body = substitute(body, env)
         env = {name: type for name, type in zip(args, call_sig[1:])}
 
-        walk = walk_tree(body, env, caller=body)
+        walk = walk_tree(body, env, caller=(str(caller) + "\n function: " + lispprint(program[i]) + "\n    method: " + lispprint(call_sig) + "\n"))
         #print(walk[1], file=sys.stderr)
         if not "FAILFAIL" in str(walk[1]):
             memo[call_sig] = walk[0]
@@ -124,7 +128,9 @@ while again:
    again = n_methods != n_filled
 
 
-prog = sorted([str(remove_casts_infer(m)).replace("'", "").replace(",","") for m in methods])
+
+
+prog = sorted([lispprint(remove_casts_infer(m)) for m in methods])
 [print(p) for p in prog if not "FAILFAIL" in p]
 
 
