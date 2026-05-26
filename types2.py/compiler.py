@@ -149,9 +149,10 @@ def call(fname, *args):
     for function in functions:
         if function.name == fname:
             return function.call(fname, *args)
-    if fname[0] == '$' and fname[1:].isdecimal():
+    if fname[0] == '$' and fname[1:].isdecimal() or fname == "-8(%rbp)":
         iprint("movq   " + fname + ", %rax")
-        return stackpush(fname)
+        return stackpush("%rax")
+
 
     raise Exception(fname + " not defined")
 
@@ -220,7 +221,7 @@ for sexpr in program:
             ret = []
             for e in expr:
                 if e in args:
-                    ret.append([arg0, arg1, arg2, arg3][args.index(e)])
+                    ret.append([arg0, arg1][args.index(e)])
                 else:
                     if type(e) == str:
                         if re.match("[0-9]+", e):

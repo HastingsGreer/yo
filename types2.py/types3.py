@@ -11,7 +11,7 @@ def parse(program_file):
 
 import trees
 
-program = parse(open("trees.lisp", "r").read())
+program = parse(open(sys.argv[1], "r").read())
 
 def compile_error(string):
     print(string, file=sys.stderr)
@@ -32,16 +32,17 @@ def substitute(tree, env):
     return tree
 
 
-def dispatch(tree):
+def dispatch(tree, caller):
     for i, sig in reversed(list(enumerate(signatures))):
         res = trees.subset(trees.cons_lists(tree), trees.cons_lists(sig))
         if res is not False:
             return i, sig, res
+    print("caller was", caller)
     compile_error("No type matches" + str(tree))
 
 
 
-def walk_tree(s_expr, env):
+def walk_tree(s_expr, env, caller=None):
     if s_expr in env:
         return env[s_expr], s_expr
     if type(s_expr) == tuple:
@@ -55,7 +56,7 @@ def walk_tree(s_expr, env):
         arg_exprs = tuple(a[1] for a in arg_walks)
 
         call_sig = (fname,) + arg_types
-        return type_check(call_sig), (mangle(call_sig),) + arg_exprs 
+        return type_check(call_sig, caller), (mangle(call_sig),) + arg_exprs 
     if type(s_expr) == int:
         return "I64", s_expr
     compile_error("Don't know how to walk" + s_expr)
@@ -66,10 +67,10 @@ def mangle(tup):
     return tup
 
 memo = {}
-def type_check(call_sig):
+def type_check(call_sig, caller=None):
     if call_sig in memo:
         return memo[call_sig]
-    i, fsig, env = dispatch(call_sig)
+    i, fsig, env = dispatch(call_sig, caller)
 
     if program[i][0] == "header":
         return substitute(program[i][2], env)
@@ -80,7 +81,7 @@ def type_check(call_sig):
         body = substitute(body, env)
         env = {name: type for name, type in zip(args, call_sig[1:])}
 
-        walk = walk_tree(body, env)
+        walk = walk_tree(body, env, caller=body)
         #print(walk[1], file=sys.stderr)
         if not "FAILFAIL" in str(walk[1]):
             memo[call_sig] = walk[0]
