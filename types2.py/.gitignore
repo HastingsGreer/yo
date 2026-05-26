@@ -1,0 +1,5 @@
+prog
+prog.IR
+__pycache__
+*.swo
+*.swt

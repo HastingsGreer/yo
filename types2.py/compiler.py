@@ -57,8 +57,12 @@ class Function:
         stackreset()
         if self.nargs >= 1:
             stackpush("%rdi")
-        if self.nargs == 2:
+        if self.nargs >= 2:
             stackpush("%rsi")
+        if self.nargs >= 3:
+            stackpush("%rdx")
+        if self.nargs >= 4:
+            stackpush("%rcx")
 
         for step in self.asm:
             if type(step) == str:
@@ -77,8 +81,11 @@ class Function:
         for i in range(1, len(args)):
             if type(args[i]) != str:
                 args[i] = call(*args[i])
-
-        if len(args) == 3:
+        if len(args) >= 5:
+            iprint("movq    " + args[4] + ", %rcx")
+        if len(args) >= 4:
+            iprint("movq    " + args[3] + ", %rdx")
+        if len(args) >= 3:
             iprint("movq    " + args[2] + ", %rsi")
         if len(args) >= 2:
             iprint("movq    " + args[1] + ", %rdi")
@@ -151,6 +158,8 @@ def call(fname, *args):
 
 arg0 = "-8(%rbp)"
 arg1 = "-16(%rbp)"
+arg2 = "-24(%rbp)"
+arg3 = "-32(%rbp)"
 
 # builtins
 functions = [
@@ -211,7 +220,7 @@ for sexpr in program:
             ret = []
             for e in expr:
                 if e in args:
-                    ret.append([arg0, arg1][args.index(e)])
+                    ret.append([arg0, arg1, arg2, arg3][args.index(e)])
                 else:
                     if type(e) == str:
                         if re.match("[0-9]+", e):

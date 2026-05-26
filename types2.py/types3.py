@@ -17,8 +17,12 @@ def compile_error(string):
     print(string, file=sys.stderr)
     sys.exit(1)
 
+def expand_sig(p):
+    if type(p[1]) == str:
+        return (p[1],) + ("A", "B", "C", "D")[:len(p[2])]
+    return p[1]
+signatures = [expand_sig(p) for p in program]
 
-signatures = [p[1] for p in program]
 
 def substitute(tree, env):
     if type(tree) == tuple:
@@ -34,6 +38,7 @@ def dispatch(tree):
         if res is not False:
             return i, sig, res
     compile_error("No type matches" + str(tree))
+
 
 
 def walk_tree(s_expr, env):

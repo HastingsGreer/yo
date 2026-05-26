@@ -17,33 +17,36 @@
 
 (defun ((map F) (List T)) (l) (if l (cons (F (car l)) ((map F) (cdr l))) (nil (infer (F ((zero T)))))))
 
+(defun ((filter F) (List T)) (l) (if l (if (F (car l)) (cons (car l) ((filter F) (cdr l))) ((filter F) (cdr l))) ((nilptr (List T)))))
+
 (defun (sum (List T)) (l) (if l (add (car l) (sum (cdr l))) ((zero T))))
 
-(defun (add X X) (a b) (sub a (sub 0 b)))
+(defun add (a b) (sub a (sub 0 b)))
 
-(defun (range T) (n) (if n (cons n (range (sub n 1))) (nil 0)))
+(defun range  (n) (if n (cons n (range (sub n 1))) (nil 0)))
 
-(defun (dec T) (x) (sub x 1))
+(defun dec (x) (sub x 1))
 
 
 
 (defun (reverse_impl (List T) (List T)) (l acc) (if l (reverse_impl (cdr l) (cons (car l) acc)) acc))
 (defun (reverse T) (l) (reverse_impl l ((nilptr  T))))
-(defun (eq X Y) (a b) (if (sub a b) 0 1))
-(defun (sign_impl X Y) (x minx) 
+(defun eq (a b) (if (sub a b) 0 1))
+(defun sign_impl  (x minx) 
   (if (eq x 0) 
     100 
     (if (eq minx 0) 
       101 
       (sign_impl (sub x 1) (sub minx 1)))))
-(defun (sign X) (x) (sign_impl x (sub 0 x)))
-(defun (mod X Y) (num div) (if (eq (sign (sub num div)) 100) (mod (sub num div) div) num))
+(defun sign  (x) (sign_impl x (sub 0 x)))
+(defun mod (num div) (if (eq (sign (sub num div)) 100) (mod (sub num div) div) num))
 
-(defun (mul X Y) (a b) (if a (add b (mul (sub a 1) b)) 0))
+(defun mul (a b) (if a (add b (mul (sub a 1) b)) 0))
 
-(defun (prime_impl X Y) (prime test) (if (sub test 1) (if (mod prime test) (prime_impl prime (sub test 1)) 0) 1))
-(defun (isprime X) (p) (if (sub p 1) (prime_impl p (sub p 1)) 0))
+(defun prime_impl (prime test) (if (sub test 1) (if (mod prime test) (prime_impl prime (sub test 1)) 0) 1))
+(defun isprime (p) (if (sub p 1) (prime_impl p (sub p 1)) 0))
 
-(defun ((filter F) (List T)) (l) (if l (if (F (car l)) (cons (car l) ((filter F) (cdr l))) ((filter F) (cdr l))) ((nilptr (List T)))))
 
-(defun (main) () ((map print_) ((filter isprime) (range 500))))
+(defun main () ((map print_) ((filter isprime) (range 500))))
+
+
