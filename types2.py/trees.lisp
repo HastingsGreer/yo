@@ -46,11 +46,6 @@
 (defun (prime_impl X Y) (prime test) (if (sub test 1) (if (mod prime test) (prime_impl prime (sub test 1)) 0) 1))
 (defun (isprime X) (p) (if (sub p 1) (prime_impl p (sub p 1)) 0))
 
-(defun (primefilt (List I64)) (l) 
-  (if l 
-    (if (isprime (car l)) 
-      (cons (car l) (primefilt (cdr l))) 
-      (primefilt (cdr l))) 
-    (nil 0)))
+(defun ((filter F) (List T)) (l) (if l (if (F (car l)) (cons (car l) ((filter F) (cdr l))) ((filter F) (cdr l))) ((nilptr (List T)))))
 
-(defun (main) () ((map print_) (primefilt (range 500))))
+(defun (main) () ((map print_) ((filter isprime) (range 500))))
