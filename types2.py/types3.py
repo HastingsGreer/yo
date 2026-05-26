@@ -1,3 +1,4 @@
+import sys
 import random
 import re
 def parse(program_file):
@@ -11,6 +12,10 @@ def parse(program_file):
 import trees
 
 program = parse(open("trees.lisp", "r").read())
+
+def compile_error(string):
+    print(string, file=sys.stderr)
+    sys.exit(1)
 
 
 signatures = [p[1] for p in program]
@@ -28,8 +33,7 @@ def dispatch(tree):
         res = trees.subset(trees.cons_lists(tree), trees.cons_lists(sig))
         if res is not False:
             return i, sig, res
-    print ("No type matches", tree)
-    raise Exception()
+    compile_error("No type matches" + str(tree))
 
 
 def walk_tree(s_expr, env):
@@ -37,7 +41,9 @@ def walk_tree(s_expr, env):
         return env[s_expr], s_expr
     if type(s_expr) == tuple:
         fname = s_expr[0]
-        if fname == "if" and random.random() > .98:
+        if fname == "if" and random.random() > .8:
+            return walk_tree(s_expr[2], env)[0], "FAILFAIL"
+        if fname == "if" and random.random() > .8:
             return walk_tree(s_expr[3], env)[0], "FAILFAIL"
         arg_walks = tuple(walk_tree(se, env) for se in s_expr[1:])
         arg_types = tuple(a[0] for a in arg_walks)
@@ -47,7 +53,7 @@ def walk_tree(s_expr, env):
         return type_check(call_sig), (mangle(call_sig),) + arg_exprs 
     if type(s_expr) == int:
         return "I64", s_expr
-    print("how get past", s_expr)
+    compile_error("Don't know how to walk" + s_expr)
 
 def mangle(tup):
     if type(tup) == tuple:
@@ -72,11 +78,8 @@ def type_check(call_sig):
 
 methods = set()
 
-
-
-#print("typeof sub", type_check(("sub", "I64", "I64")))
-#print("typeof cast", type_check((("cast", "Horse"), "I64")))
-type_check(("main",))
+for i in range(10):
+   type_check(("main",))
 
 def remove_casts_infer(s_expr):
     remap_dict = {
@@ -85,6 +88,7 @@ def remove_casts_infer(s_expr):
         "x$cdr_$_I64$__": "cdr",
         "x$cdr_$_I64$__": "cdr",
         "x$cons_$_I64$_I64$__": "cons",
+        "x$print_$_I64$__": "print",
         }
     if type(s_expr) == tuple and len(s_expr) > 0:
         s_expr = list(s_expr)
@@ -101,9 +105,6 @@ def remove_casts_infer(s_expr):
     if type(s_expr) == str and s_expr == "x$main$__":
         return "main"
     return s_expr
-
-
-        
 
 prog = sorted([str(remove_casts_infer(m)).replace("'", "").replace(",","") for m in methods])
 [print(p) for p in prog if not "FAILFAIL" in p]

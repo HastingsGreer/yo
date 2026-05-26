@@ -1,3 +1,5 @@
+.DELETE_ON_ERROR:
+
 prog.IR: trees.lisp
 	python3 types3.py > prog.IR
 
@@ -8,4 +10,4 @@ prog: prog.s
 	gcc prog.s -o prog
 
 test: prog
-	./prog; echo $$?
+	./prog; echo

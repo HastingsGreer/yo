@@ -1,7 +1,7 @@
 import string
 
 def match(tree, pattern, environ):
-    if type(pattern) == str and pattern.upper() == pattern:
+    if type(pattern) == str and pattern.upper() == pattern and pattern.isalpha():
         if pattern in environ:
             if environ[pattern] == tree:
                 return environ

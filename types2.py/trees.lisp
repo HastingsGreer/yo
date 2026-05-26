@@ -3,11 +3,13 @@
 (header (infer T) T)
 (header (cons_ I64 I64) I64)
 (header (car_ I64) I64)
+(header (print_ I64) I64)
 (header (cdr_ I64) I64)
 (header (if C T T) T)
 
-(defun ((zero T)) () ((cast T) 0))
-(defun (nil T) (x) ((zero (List T))))
+(defun ((nilptr T)) () ((cast T) 0))
+(defun ((zero I64)) () ((cast I64) 0))
+(defun (nil T) (x) ((nilptr (List T))))
 
 (defun (cons T (List T)) (e l) ((cast (List T)) (cons_ ((cast I64) e) ((cast I64) l)))) 
 (defun (car (List T)) (l) ((cast T) (car_ ((cast I64) l))))
@@ -23,4 +25,4 @@
 
 (defun (dec T) (x) (sub x 1))
 
-(defun (main) () (sum ((map dec) (range (dec 8)))))
+(defun (main) () (print_ (sum ((map dec) (range (dec 90))))))
