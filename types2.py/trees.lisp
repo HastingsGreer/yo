@@ -25,8 +25,6 @@
 
 (defun (dec T) (x) (sub x 1))
 
-(defun (main) () (print_ (sum ((map dec) (range (dec 90))))))
-(defun (main) () ((map print_) (reverse(range 10))))
 
 
 (defun (reverse_impl (List T) (List T)) (l acc) (if l (reverse_impl (cdr l) (cons (car l) acc)) acc))
