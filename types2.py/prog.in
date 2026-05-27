@@ -1,0 +1,141 @@
+# 0 "primes.lisp"
+# 0 "<built-in>"
+# 0 "<command-line>"
+# 1 "/usr/include/stdc-predef.h" 1 3 4
+# 0 "<command-line>" 2
+# 1 "primes.lisp"
+# 1 "prelude.lisp" 1
+# 12 "prelude.lisp"
+(header ((cast Y) X) Y)
+(header (sub I64 I64) I64)
+(header (infer T) T)
+(header (cons_ I64 I64) I64)
+(header (car_ I64) I64)
+(header (print_ I64) I64)
+(header (cdr_ I64) I64)
+(header (if I64 T T) T)
+(header (if (List Q) T T) T)
+
+(defun ((nilptr T)) () ((cast T) 0))
+(defun ((zero I64)) () ((cast I64) 0))
+(defun (nil T) (x) ((nilptr (List T))))
+(defun ((nil T)) () ((nilptr (List T))))
+
+(defun (cons T (List T)) (e l) ((cast (List T)) (cons_ ((cast I64) e) ((cast I64) l))))
+(defun (car (List T)) (l) ((cast T) (car_ ((cast I64) l))))
+(defun (cdr (List T)) (l) ((cast (List T)) (cdr_ ((cast I64) l))))
+
+(defun (sing T) (a) (cons a ((nil T))))
+(defun (pair T T) (a b) (cons a (cons b ((nil T)))))
+(defun (triple T T T) (a b c) (cons a (cons b (cons c ((nil T))))))
+(defun (quad T T T T) (a b c d) (cons a (cons b (cons c (cons d ((nil T)))))))
+
+(defun ((map F) (List T)) (l)
+  (if l
+      (cons (F (car l)) ((map F) (cdr l)))
+      (nil (infer (F ((nilptr T)))))))
+
+(defun ((filter F) (List T)) (l)
+  (if l
+      (if (F (car l))
+   (cons (car l) ((filter F) (cdr l)))
+   ((filter F) (cdr l)))
+      ((nilptr (List T)))))
+
+(defun (add I64 I64) (a b) (sub a (sub 0 b)))
+(defun (mul T T) (a b)
+  (if (neq a 0)
+      (add b (mul (sub a 1) b))
+      ((zero T))))
+(defun eq (a b) (if (sub a b) 0 1))
+(defun neq (a b) (if (eq a b) 0 1))
+(defun sign_impl (x minx)
+  (if (eq x 0)
+    100
+    (if (eq minx 0)
+        101
+ (sign_impl (sub x 1) (sub minx 1)))))
+
+(defun sign (x) (sign_impl x (sub 0 x)))
+(defun mod (num div) (if (eq (sign (sub num div)) 100) (mod (sub num div) div) num))
+
+(defun divide (num div) (if (eq (sign (sub num div)) 100)
+       (add 1 (divide (sub num div) div))
+       (sub 0 1)))
+
+(defun range (n)
+  (if n
+      (cons n (range (sub n 1)))
+      (nil 0)))
+
+(defun (sum (List T)) (l) (if l (add (car l) (sum (cdr l))) ((zero T))))
+(defun (reverse_impl (List T) (List T)) (l acc) (if l (reverse_impl (cdr l) (cons (car l) acc)) acc))
+(defun (reverse T) (l) (reverse_impl l ((nilptr T))))
+(defun (print I64) (x) (add (print_ (add 48 (mod x 10))) 0))
+(defun (print (List T)) (t) ((map print) t))
+# 2 "primes.lisp" 2
+
+(defun prime_impl (prime test)
+  (if (neq test 1)
+      (if (neq (mod prime test) 0)
+   (prime_impl prime (sub test 1))
+   0)
+      1))
+(defun isprime (p)
+  (if (neq p 1)
+      (prime_impl p (sub p 1))
+      0))
+
+
+(defun main () ((map print_) ((filter isprime) (range 500))))
+
+(defun zero_ (x) 0)
+(defun (Consint I64) (n) ((cast Consint) ((map zero_) (range n))))
+(defun (len (List T)) (l) (if l (add 1 (len (cdr l))) 0))
+(defun (I64 Consint) (n) (len ((cast (List I64)) n)))
+(defun (dec Consint) (n) ((cast Consint) (cdr ((cast (List I64)) n))))
+(defun (inc Consint) (n) ((cast Consint) (cons 0 ((cast (List I64)) n))))
+(defun (sub Consint Consint) (a b) (if b (sub (dec a) (dec b)) a))
+(defun (sub Consint I64) (a b) (sub a (Consint b)))
+(defun (sub I64 Consint) (a b) (sub (Consint a) b))
+(defun (add Consint Consint) (a b) (if b (add (inc a) (dec b)) a))
+(defun ((zero Consint)) () (Consint 0))
+(header (if Consint T T) T)
+
+(defun cain () (print_ (I64 (sub (Consint 7) 3))))
+
+
+(defun ((Signedof T) T T) (a b) ((cast (Signedof T)) (pair a b))) (defun (first (Signedof T)) (n) (car ((cast (List T)) n))) (defun (second (Signedof T)) (n) (car (cdr ((cast (List T)) n))))
+
+
+(defun ((Signedof T) Q) (n) ((Signedof T) (T n )))
+(defun ((Signedof T) T) (n) ((Signedof T) n ((zero T))))
+(defun (I64 (Signedof T)) (n) (sub (first n) (second n)))
+(defun ((zero (Signedof T))) () ((Signedof T) 0))
+
+
+(defun (normform (Signedof T)) (n)
+  (if (neq (first n) 0)
+      (if (neq (second n) 0)
+   (normform ((Signedof T) (sub (first n) 1) (sub (second n) 1)))
+   n)
+      n))
+
+
+(defun (add (Signedof T) (Signedof T)) (a b) (normform ((Signedof T) (add (first a) (first b)) (add (second a) (second b)))))
+(defun (sub (Signedof T) (Signedof T)) (a b) (normform ((Signedof T) (add (first a) (second b)) (add (second a) (first b)))))
+(defun (eq (Signedof T) (Signedof T)) (a b) (if (sub (first a) (first b)) 0 (if (sub (second a) (second b)) 0 1)))
+
+
+(defun (sub (Signedof T) I64) (a b) (sub a ((Signedof T) b)))
+(defun (sub I64 (Signedof T)) (a b) (sub ((Signedof T) a) b))
+(defun (eq (Signedof T) I64) (a b) (eq a ((Signedof T) b)))
+
+(defun main () (print_ (isprime ((Signedof Consint) (Consint 13)))))
+
+
+(defun (add (Signedof T) I64) (a b) (add a ((Signedof T) b)))
+
+
+
+(defun cain () (print_ (I64 (mod ((Signedof I64) 12) ((Signedof I64) 7)))))
