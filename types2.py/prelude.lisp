@@ -19,6 +19,10 @@
 (header (if I64 T T) T)
 (header (if (List Q) T T) T)
 
+(defun (do X Y) (x y) y)
+(defun (do A X Y ) (a x y) y)
+(defun (do B A X Y ) (b a x y) y)
+
 (defun ((nilptr T)) () ((cast T) 0))
 (defun ((zero I64)) () ((cast I64) 0))
 (defun (nil T) (x) ((nilptr (List T))))
@@ -64,7 +68,7 @@
 
 (defun divide (num div) (if (eq (sign (sub num div)) 100)
 			    (add 1 (divide (sub num div) div))
-			    (sub 0 1)))
+			    0))
 
 (defun range (n) 
   (if n 
@@ -74,7 +78,16 @@
 (defun (sum (List T)) (l) (if l (add (car l) (sum (cdr l))) ((zero T))))
 (defun (reverse_impl (List T) (List T)) (l acc) (if l (reverse_impl (cdr l) (cons (car l) acc)) acc))
 (defun (reverse T) (l) (reverse_impl l ((nilptr  T))))
-(defun (print I64) (x) (add (print_ (add 48 (mod x 10)))  0))
-(defun (print (List T)) (t) ((map print) t))
+(defun (printdigits I64) (x) (add 
+			 (if (divide x 10) (printdigits (divide x 10)) 0)
+			 (print_ (add 48 (mod x 10)))  
+		))
+(defun (print I64) (x) (add (printdigits x) (print_ 32)))
+(defun (print (List T)) (t) (do 
+			      (print_ 40) 
+			      ((map print) t) 
+			      (print_ 41)
+			      (print_ 32)
+			      ))
 
 #endif

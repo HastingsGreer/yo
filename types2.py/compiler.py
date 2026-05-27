@@ -149,7 +149,7 @@ def call(fname, *args):
     for function in functions:
         if function.name == fname:
             return function.call(fname, *args)
-    if fname[0] == '$' and fname[1:].isdecimal() or fname == "-8(%rbp)" or fname == "-16(%rbp)":
+    if fname[0] == '$' and fname[1:].isdecimal() or fname == "-8(%rbp)" or fname == "-16(%rbp)" or fname == "-24(%rbp)" or fname == "-32(%rbp)":
         iprint("movq   " + fname + ", %rax")
         return stackpush("%rax")
 
@@ -243,5 +243,5 @@ for f in functions:
 print("""
 	.section	.rodata
 .LC0:
-	.string	"%li "
+	.string	"%c"
     """)

@@ -12,7 +12,7 @@
       FALSE))
 
 
-(defun main () ((map print_) ((filter isprime) (range 500))))
+// (defun main () ((map print_) ((filter isprime) (range 500))))
 
 (defun zero_ (x) 0)
 (defun (Consint I64) (n) ((cast Consint) ((map zero_) (range n))))
@@ -27,7 +27,7 @@
 (defun ((zero Consint)) () (Consint 0))
 (header (if Consint T T) T)
 
-(defun cain () (print_ (I64 (sub (Consint 7) 3))))
+// (defun main () (print_ (I64 (sub (Consint 7) 3))))
 
 
 STRUCT2( (Signedof T), T, T, first, second)
@@ -47,23 +47,30 @@ STRUCT2( (Signedof T), T, T, first, second)
       n))
 
 // Functions to be an integer
-(defun (add (Signedof T) (Signedof T)) (a b) (normform ((Signedof T) (add (first a) (first b)) (add (second a) (second b)))))
-(defun (sub (Signedof T) (Signedof T)) (a b) (normform ((Signedof T) (add (first a) (second b)) (add (second a) (first b)))))
-(defun (eq (Signedof T) (Signedof T)) (a b) (if (sub (first a) (first b)) 0 (if (sub (second a) (second b)) 0 1)))
+(defun (add (Signedof T) (Signedof T)) (a b) 
+  (normform ((Signedof T) (add (first a) (first b)) (add (second a) (second b)))))
+(defun (sub (Signedof T) (Signedof T)) (a b) 
+  (normform ((Signedof T) (add (first a) (second b)) (add (second a) (first b)))))
+(defun (eq (Signedof T) (Signedof T)) (a b) 
+  (if (sub (first a) (first b)) 
+      0 
+      (if (sub (second a) (second b)) 
+	  0 
+	  1)))
 
 // Casts (would prefer to not have to manually do these) 
 (defun (sub (Signedof T) I64) (a b) (sub a ((Signedof T) b)))
 (defun (sub I64 (Signedof T)) (a b) (sub ((Signedof T) a) b))
 (defun (eq (Signedof T) I64) (a b) (eq a ((Signedof T) b)))
 
-(defun main () (print_ (isprime ((Signedof Consint) (Consint 13)))))
+(defun main () (print (isprime ((Signedof Consint) (Consint 14)))))
 
 
 (defun (add (Signedof T) I64) (a b) (add a ((Signedof T) b)))
 
 // (defun main () (print_ (I64 (sub ((Signedof I64) 7) ((Signedof I64) 3)))))
 
-(defun cain () (print_ (I64 (mod ((Signedof I64) 12) ((Signedof I64) 7)))))
+// (defun cain () (print_ (I64 (mod ((Signedof I64) 12) ((Signedof I64) 7)))))
 
 
 
