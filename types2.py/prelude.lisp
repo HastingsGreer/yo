@@ -1,6 +1,11 @@
 #ifndef PRELUDE
 #define PRELUDE
 
+#define STRUCT2(NAME, ARG1, ARG2, ARG1NAME, ARG2NAME)              \
+(defun (NAME ARG1 ARG2) (a b) ((cast NAME) (pair a b)))            \
+(defun (ARG1NAME NAME) (n) (car ((cast (List ARG1)) n)))           \
+(defun (ARG2NAME NAME) (n) (car (cdr ((cast (List ARG2)) n))))
+
 (header ((cast Y) X) Y)
 (header (sub I64 I64) I64)
 (header (infer T) T)

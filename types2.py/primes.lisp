@@ -23,9 +23,7 @@
 
 (defun (pair T T) (a b) (cons a (cons b ((nil T)))))
 
-(defun ((Signedof T) T T) (a b) ((cast (Signedof T)) (pair a b)))
-(defun (first (Signedof T)) (n) (car ((cast (List T)) n)))
-(defun (second (Signedof T)) (n) (car (cdr ((cast (List T)) n))))
+STRUCT2( (Signedof T), T, T, first, second)
 
 (defun ((Signedof T) Q) (n) ((Signedof T) (T n )))
 (defun ((Signedof T) T) (n) ((Signedof T) n ((zero T))))
@@ -49,6 +47,7 @@
 
 (defun main () (print_ (I64 (mod ((Signedof I64) 12) ((Signedof I64) 7)))))
 (defun main () (print_ (isprime ((Signedof Consint) (Consint 13)))))
+
 
 
 
