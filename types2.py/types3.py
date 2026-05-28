@@ -1,22 +1,15 @@
 import sys
 import random
 import re
-def parse(program_file):
-    program_file = re.sub(r"#.*$", "", program_file)
-    program_file = re.sub(r"([A-Za-z+_=\-\?]+[0-9]*)", r"'\1',", program_file)
-    program_file = re.sub(r"([0-9]+)", r"\1,", program_file)
-    program_file = re.sub(r"\,\'", r"'", program_file)
-    program_file = "(" + re.sub("\\)", "),", program_file) + ")"
-    return eval(program_file)
-
-def lispprint(tup):
-    return str(tup).replace("'", "").replace(",","")
     
-
+import parse
 
 import trees
 
-program = parse(open(sys.argv[1], "r").read())
+def lispprint(tup):
+    return str(tup).replace("'", "").replace(",","")
+
+program = parse.parse(open(sys.argv[1], "r").read())
 
 def compile_error(string):
     print(string, file=sys.stderr)
@@ -52,9 +45,9 @@ def walk_tree(s_expr, env, caller=None):
         return env[s_expr], s_expr
     if type(s_expr) == tuple:
         fname = s_expr[0]
-        if fname == "if" and random.random() > .7:
+        if fname == "if" and random.random() > .9:
             return walk_tree(s_expr[2], env)[0], "FAILFAIL"
-        if fname == "if" and random.random() > .5:
+        if fname == "if" and random.random() > .3:
             return walk_tree(s_expr[3], env)[0], "FAILFAIL"
         arg_walks = tuple(walk_tree(se, env, caller) for se in s_expr[1:])
         arg_types = tuple(a[0] for a in arg_walks)
@@ -106,7 +99,7 @@ def remove_casts_infer(s_expr):
     if type(s_expr) == tuple and len(s_expr) > 0:
         s_expr = list(s_expr)
         if type(s_expr[0]) == str:
-            if "cast" in s_expr[0]:
+            if "x$cast" in s_expr[0]:
                 return remove_casts_infer(s_expr[1])
             if "infer" in s_expr[0]:
                 return 0
