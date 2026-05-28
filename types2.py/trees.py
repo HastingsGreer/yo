@@ -25,6 +25,8 @@ def match(tree, pattern, environ):
     return False
 
 def subset(a, b):
+    a = cons_lists(a)
+    b = cons_lists(b)
     ret = match(a, b, {})
     if ret is False:
         return False

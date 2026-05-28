@@ -217,6 +217,9 @@ for sexpr in program:
     if sexpr[0] == "defun":
         name, args, body = sexpr[1:]
 
+        if type(body) == str:
+            body = [body]
+
         def remap(expr):
             ret = []
             for e in expr:

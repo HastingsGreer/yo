@@ -1,4 +1,5 @@
 import sys
+from functools import cache
 import random
 import re
     
@@ -29,14 +30,59 @@ def substitute(tree, env):
         return env[tree]
     return tree
 
-
-def dispatch(tree, caller):
+@cache 
+def dispatch_impl(tree):
+    candidates = []
     for i, sig in reversed(list(enumerate(signatures))):
-        res = trees.subset(trees.cons_lists(tree), trees.cons_lists(sig))
+        res = trees.subset(tree, sig)
         if res is not False:
-            return i, sig, res
-    compile_error("caller was" + lispprint(caller) + "\n" + 
-    "No type matches" + lispprint(tree))
+            candidates.append((i, sig, res))
+    specific = []
+    if len(candidates) != 1:
+        print("===Dispatch", tree, file=sys.stderr)
+        for c in candidates: 
+            print("candidate: " , c[1], file=sys.stderr)
+        for i in range(len(candidates)):
+            chosen = candidates[i]
+
+            valid = True
+             
+            for j in range(len(candidates)):
+                if i != j:
+                    c = candidates[j]
+                    c_subtype_of_chosen = trees.subset(c[1], chosen[1]) is not False 
+
+                    print(c[1] , "<: ", chosen[1], c_subtype_of_chosen, file=sys.stderr)
+                    if c_subtype_of_chosen:
+                        valid = False
+                valid = False
+            if valid:
+                specific.append(chosen)
+
+        return candidates, specific
+
+
+
+
+    return candidates, candidates
+
+@cache
+def dispatch(tree, caller):
+    candidates, specific = dispatch_impl(tree)
+    if len(candidates) == 0:
+        compile_error("caller was" + lispprint(caller) + "\n" + 
+        "No type matches" + lispprint(tree))
+
+    if len(specific) != 1:
+        for c in candidates:
+            print(lispprint(c), lispprint(program[c[0]]), file=sys.stderr)
+        compile_error("caller was" + lispprint(caller) + "\n" + 
+        "No most specificic method for" + lispprint(tree))
+
+
+
+    return candidates[0]
+
 
 
 
