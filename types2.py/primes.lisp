@@ -63,7 +63,7 @@ STRUCT2( (Signedof T), T, T, first, second)
 (defun (sub I64 (Signedof T)) (a b) (sub ((Signedof T) a) b))
 (defun (eq (Signedof T) I64) (a b) (eq a ((Signedof T) b)))
 
-(defun main () (print (isprime ((Signedof Consint) (Consint 14)))))
+(defun main () (print (isprime ((Signedof Consint) (Consint 13)))))
 
 
 (defun (add (Signedof T) I64) (a b) (add a ((Signedof T) b)))
