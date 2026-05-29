@@ -26,7 +26,7 @@
 
 (defun havel (x) (print_ (car x)))
 (defun nope () 0)
-(defun main () ((unwrap havel nope) (cdr (cons 3 (cons 12 (nil 0))))))
+// (defun main () ((unwrap havel nope) (cdr (cons 3 (cons 12 (nil 0))))))
 
 (defun ((mapyes F) (List T)) (l) (Some (cons (F (car l)) (cdr l))))
 (defun ((mapno F T)) () (nil (infer (F ((zero T))))))

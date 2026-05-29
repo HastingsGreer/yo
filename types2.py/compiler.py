@@ -1,23 +1,30 @@
 import re
 import sys
 from dataclasses import dataclass
+import parse
 
-source = """
-(defun powtwo (a) (if a (add (powtwo (sub a 1)) (powtwo (sub a 1))) 1))
-(defun main () (powtwo 5)) """
-
-source = open(sys.argv[1], "r").read()
-program_file = re.sub(r"([<>\|A-Za-z+_=\-\?0-9\$]+)", r"'\1',", source)
-#program_file = re.sub(r"'([0-9]+)'", r"\1", program_file)
-program_file = "(" + re.sub("\\)", "),", program_file) + ")"
-program = eval(program_file)
-
+program = parse.get_program()
 
 def iprint(*x):
     if re.match("^.L.:$", x[0]):
         print(*x)
     else:
         print("   ", *x)
+
+mungemap = {}
+def munge(name):
+    if not "$" in name:
+        return name
+    if name in mungemap:
+        return mungemap[name]
+    mungemap[name] = "m" + str(len(mungemap))
+    return mungemap[name]
+def mungetree(t):
+    if type(t) == tuple:
+        return tuple(mungetree(x) for x in t)
+    return munge(t)
+
+program = mungetree(program)
 
 
 stck = [0]
@@ -154,7 +161,7 @@ def call(fname, *args):
         return stackpush("%rax")
 
 
-    raise Exception(fname + " not defined")
+    raise Exception(str(fname) + " not defined")
 
 
 arg0 = "-8(%rbp)"
@@ -168,7 +175,7 @@ functions = [
     Instr("add"),
     Instr("sub"),
     Function(
-        "print",
+        "print_",
         1,
         [
             "subq	$16, %rsp",
@@ -184,7 +191,7 @@ functions = [
         ],
     ),
     Function(
-        "cons",
+        "cons_",
         2,
         [
             "subq    $32, %rsp",
@@ -204,8 +211,8 @@ functions = [
             "movq    -8(%rbp), %rax",
         ],
     ),
-    Function("car", 1, ["movq    -8(%rbp), %rax", "movq    (%rax), %rax"]),
-    Function("cdr", 1, ["movq    -8(%rbp), %rax", "movq    8(%rax), %rax"]),
+    Function("car_", 1, ["movq    -8(%rbp), %rax", "movq    (%rax), %rax"]),
+    Function("cdr_", 1, ["movq    -8(%rbp), %rax", "movq    8(%rax), %rax"]),
 ]
 
 

@@ -14,7 +14,7 @@
 
 
 
-// (defun main () ((map print_) ((filter isprime) (range 500))))
+// (defun main () ((map print) ((filter isp|rime) (range 500))))
 
 (defun zero_ (x) 0)
 (defun (Consint I64) (n) ((cast Consint) ((map zero_) (range n))))
@@ -65,17 +65,16 @@ STRUCT2( (Signedof T), T, T, first, second)
 (defun (sub I64 (Signedof T)) (a b) (sub ((Signedof T) a) b))
 (defun (eq (Signedof T) I64) (a b) (eq a ((Signedof T) b)))
 
-(defun main () (print (isprime ((Signedof Consint) (Consint 13)))))
+// (defun main () (print (isprime ((Signedof Consint) (Consint 13)))))
 
 
 (defun (add (Signedof T) I64) (a b) (add a ((Signedof T) b)))
 
-// (defun main () (print_ (I64 (sub ((Signedof I64) 7) ((Signedof I64) 3)))))
+//  (defun main () (print_ (I64 (sub ((Signedof I64) 7) ((Signedof I64) 3)))))
 
 // (defun cain () (print_ (I64 (mod ((Signedof I64) 12) ((Signedof I64) 7)))))
 
 
 
-
-
-
+(defun cons_sign (x) ((Signedof Consint) (Consint x)))
+(defun main () ((map print) ((map I64) ((map I64) ((filter isprime) ((map cons_sign) (range 40)))))))
