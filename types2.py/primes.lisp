@@ -14,7 +14,7 @@
 
 
 
-// (defun main () ((map print) ((filter isp|rime) (range 500))))
+// (defun main () ((map print) ((filter isprime) (range 500))))
 
 (defun zero_ (x) 0)
 (defun (Consint I64) (n) ((cast Consint) ((map zero_) (range n))))
@@ -77,4 +77,4 @@ STRUCT2( (Signedof T), T, T, first, second)
 
 
 (defun cons_sign (x) ((Signedof Consint) (Consint x)))
-(defun main () ((map print) ((map I64) ((map I64) ((filter isprime) ((map cons_sign) (range 40)))))))
+ (defun main () ((map print) ((map I64) ((map I64) ((filter isprime) ((map cons_sign) (range 90)))))))

@@ -13,7 +13,7 @@ def iprint(*x):
 
 mungemap = {}
 def munge(name):
-    if not "$" in name:
+    if not "<" in name:
         return name
     if name in mungemap:
         return mungemap[name]

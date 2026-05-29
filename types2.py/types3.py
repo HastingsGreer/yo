@@ -84,6 +84,7 @@ def walk_tree(s_expr, env, error_info=None):
         return return_type, (name,) + arg_exprs 
     if s_expr.isdecimal():
         return "I64", s_expr
+    print(error_info, file=sys.stderr)
     compile_error("Don't know how to walk " + s_expr)
 
 
@@ -112,7 +113,7 @@ def dispatch_then_instantiate(call_sig, error_info=None):
                                     + "\n    method: " 
                                     + lispprint(call_sig) + "\n"))
 
-        name = mangle(call_sig)
+        name = mangle((call_sig, return_type))
         if not "FAILFAIL" in str(monomorphised_body):
             memo[call_sig] = return_type, name
         methods.add(("defun", name, args, monomorphised_body))
@@ -120,7 +121,7 @@ def dispatch_then_instantiate(call_sig, error_info=None):
 def mangle(tup):
 
     if type(tup) == tuple:
-        return "x$" + "$_".join(map(mangle, tup)) + "$__"
+        return "<" + ":".join(map(mangle, tup)) + ">"
     def charmangle(c:str):
         if c.isalnum() or c in "$_":
             return c
@@ -143,12 +144,13 @@ def remove_casts_infer(s_expr):
     if type(s_expr) == tuple and len(s_expr) > 0:
         s_expr = list(s_expr)
         if type(s_expr[0]) == str:
-            if "x$cast" in s_expr[0]:
+            if "<cast" in s_expr[0]:
+                print(s_expr[0], file=sys.stderr)
                 return remove_casts_infer(s_expr[1])
             if "infer" == s_expr[0]:
                 return 0
             return (s_expr[0],) + tuple(remove_casts_infer(t) for t in s_expr[1:])
-    if type(s_expr) == str and s_expr == "x$main$__":
+    if type(s_expr) == str and "<<main>:" in s_expr:
         return "main"
     return s_expr
 
