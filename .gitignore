@@ -2,3 +2,6 @@
 *.swp
 *.swo
 a.out
+
+prog*
+__pycache__
