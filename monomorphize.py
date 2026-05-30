@@ -145,7 +145,6 @@ def remove_casts_infer(s_expr):
         s_expr = list(s_expr)
         if type(s_expr[0]) == str:
             if "<cast" in s_expr[0]:
-                print(s_expr[0], file=sys.stderr)
                 return remove_casts_infer(s_expr[1])
             if "infer" == s_expr[0]:
                 return 0
