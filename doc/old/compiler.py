@@ -1,30 +1,23 @@
 import re
 import sys
 from dataclasses import dataclass
-import parse
 
-program = parse.get_program()
+source = """
+(defun powtwo (a) (if a (add (powtwo (sub a 1)) (powtwo (sub a 1))) 1))
+(defun main () (powtwo 5)) """
+
+source = open(sys.argv[1], "r").read()
+program_file = re.sub(r"([A-Za-z+_=\-\?]+[0-9]*)", r"'\1',", source)
+program_file = re.sub(r"([0-9]+)", r"\1,", program_file)
+program_file = "(" + re.sub("\\)", "),", program_file) + ")"
+program = eval(program_file)
+
 
 def iprint(*x):
     if re.match("^.L.:$", x[0]):
         print(*x)
     else:
         print("   ", *x)
-
-mungemap = {}
-def munge(name):
-    if not "<" in name:
-        return name
-    if name in mungemap:
-        return mungemap[name]
-    mungemap[name] = "m" + str(len(mungemap))
-    return mungemap[name]
-def mungetree(t):
-    if type(t) == tuple:
-        return tuple(mungetree(x) for x in t)
-    return munge(t)
-
-program = mungetree(program)
 
 
 stck = [0]
@@ -64,12 +57,8 @@ class Function:
         stackreset()
         if self.nargs >= 1:
             stackpush("%rdi")
-        if self.nargs >= 2:
+        if self.nargs == 2:
             stackpush("%rsi")
-        if self.nargs >= 3:
-            stackpush("%rdx")
-        if self.nargs >= 4:
-            stackpush("%rcx")
 
         for step in self.asm:
             if type(step) == str:
@@ -88,11 +77,8 @@ class Function:
         for i in range(1, len(args)):
             if type(args[i]) != str:
                 args[i] = call(*args[i])
-        if len(args) >= 5:
-            iprint("movq    " + args[4] + ", %rcx")
-        if len(args) >= 4:
-            iprint("movq    " + args[3] + ", %rdx")
-        if len(args) >= 3:
+
+        if len(args) == 3:
             iprint("movq    " + args[2] + ", %rsi")
         if len(args) >= 2:
             iprint("movq    " + args[1] + ", %rdi")
@@ -156,18 +142,10 @@ def call(fname, *args):
     for function in functions:
         if function.name == fname:
             return function.call(fname, *args)
-    if fname[0] == '$' and fname[1:].isdecimal() or fname == "-8(%rbp)" or fname == "-16(%rbp)" or fname == "-24(%rbp)" or fname == "-32(%rbp)":
-        iprint("movq   " + fname + ", %rax")
-        return stackpush("%rax")
-
-
-    raise Exception(str(fname) + " not defined")
 
 
 arg0 = "-8(%rbp)"
 arg1 = "-16(%rbp)"
-arg2 = "-24(%rbp)"
-arg3 = "-32(%rbp)"
 
 # builtins
 functions = [
@@ -175,7 +153,7 @@ functions = [
     Instr("add"),
     Instr("sub"),
     Function(
-        "print_",
+        "print",
         1,
         [
             "subq	$16, %rsp",
@@ -191,7 +169,7 @@ functions = [
         ],
     ),
     Function(
-        "cons_",
+        "cons",
         2,
         [
             "subq    $32, %rsp",
@@ -211,8 +189,8 @@ functions = [
             "movq    -8(%rbp), %rax",
         ],
     ),
-    Function("car_", 1, ["movq    -8(%rbp), %rax", "movq    (%rax), %rax"]),
-    Function("cdr_", 1, ["movq    -8(%rbp), %rax", "movq    8(%rax), %rax"]),
+    Function("car", 1, ["movq    -8(%rbp), %rax", "movq    (%rax), %rax"]),
+    Function("cdr", 1, ["movq    -8(%rbp), %rax", "movq    8(%rax), %rax"]),
 ]
 
 
@@ -224,20 +202,14 @@ for sexpr in program:
     if sexpr[0] == "defun":
         name, args, body = sexpr[1:]
 
-        if type(body) == str:
-            body = [body]
-
         def remap(expr):
             ret = []
             for e in expr:
                 if e in args:
-                    ret.append([arg0, arg1, arg2, arg3][args.index(e)])
+                    ret.append([arg0, arg1][args.index(e)])
                 else:
                     if type(e) == str:
-                        if re.match("[0-9]+", e):
-                            ret.append("$" + e)
-                        else:
-                            ret.append(e)
+                        ret.append(e)
                     elif type(e) == int:
                         ret.append("$" + str(e))
                     else:
@@ -253,5 +225,5 @@ for f in functions:
 print("""
 	.section	.rodata
 .LC0:
-	.string	"%c"
+	.string	"%li "
     """)

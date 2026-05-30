@@ -1,18 +1,19 @@
-fib.s: compiler.py fib.lisp
-	python3 compiler.py fib.lisp > fib.s
+.DELETE_ON_ERROR:
 
-fib: fib.s
-	gcc fib.s -o fib
+prog.in: $(SRC)
+	cpp $(SRC) | grep -v // > prog.in
 
-fibtest: fib
-	./fib; echo
+prog.IR: prog.in monomorphize.py
+	python3 monomorphize.py prog.in > prog.IR
 
+prog.s: compiler.py prog.IR
+	python3 compiler.py prog.IR > prog.s
 
-primes.s: compiler.py primes.lisp
-	python3 compiler.py primes.lisp > primes.s
+prog: prog.s
+	gcc prog.s -o prog
 
-primes: primes.s
-	gcc primes.s -o primes
+test: prog
+	./prog; echo
 
-primestest: primes
-	./primes; echo
+mactest: prog.s
+	podman run --rm --platform linux/amd64 -v "$$PWD":/work -w /work docker.io/library/gcc:latest sh -c "gcc prog.s -o prog; ./prog"
