@@ -49,14 +49,20 @@
 	  ((filter F) (cdr l))) 
       ((nilptr (List T)))))
 
+(defun ((. F) A) (a) (F a))
+(defun ((. F) (List A)) (l)
+  (if l
+    (cons ((. F) (car l)) ((. F) (cdr l)))
+    (nil (infer ((. F) (car l))))))
+
 
 (defun ((. F) (List A) B) (a b) (if a 
-					    (cons (F (car a) b) ((. F) (cdr a) b))
-					    (nil (infer (F ((nilptr A)) b)))))
+					    (cons ((. F) (car a) b) ((. F) (cdr a) b))
+					    (nil (infer ((. F) ((nilptr A)) b)))))
 
 (defun ((. F) A (List B)) (a b) (if b 
-					    (cons (F a (car b)) ((. F) a (cdr b)))
-					    (nil (infer (F a (car b))))))
+					    (cons ((. F) a (car b)) ((. F) a (cdr b)))
+					    (nil (infer ((. F) a (car b))))))
 
 (defun ((. F) (List A) (List B)) (a b)
 	  (cons 
@@ -71,14 +77,23 @@
 (defun ((. F) A B) (a b) (F a b))
 
 
-
+(defun - (x) (sub 0 x))
 
 
 (defun (add I64 I64) (a b) (sub a (sub 0 b)))
-(defun (mul T T) (a b) 
+(defun (mul_pos T T) (a b) 
   (if (neq a 0) 
       (add b (mul (sub a 1) b)) 
       ((zero T))))
+(defun (mul T T) (a b) (if (eq (sign a) 100)
+			   (if (eq (sign b) 100)
+			       (mul_pos a b)
+			       (- (mul_pos a (sub 0 b))))
+			   (if (eq (sign b) 100)
+			       (sub 0 (mul_pos (sub 0 a) b))
+			       (mul_pos (sub 0 a) (sub 0 b)))))
+			   
+(defun (abs I64) (x) (if (eq (sign x) 100) x (sub 0 x)))
 (defun eq (a b) (if (sub a b) 0 1))
 (defun neq (a b) (if (eq a b) 0 1))
 (defun sign_impl  (x minx) 
@@ -107,12 +122,15 @@
 			 (if (divide x 10) (printdigits (divide x 10)) 0)
 			 (print_ (add 48 (mod x 10)))  
 		))
-(defun (print I64) (x) (add (printdigits x) (print_ 32)))
+(defun (print I64) (x) (do 
+			 (if (eq (sign x) 101) (print_ 45) 0)
+			 (printdigits (abs x)) 
+			 (print_ 32)))
 (defun (print (List T)) (t) (do 
 			      (print_ 40) 
 			      ((map print) t) 
 			      (print_ 41)
-			      (print_ 32)
+			      (print_ 10)
 			      ))
 
 #endif
