@@ -13,7 +13,7 @@ def parse(program_file):
         program_file[j] = "((cast String) " + cons_of_string(program_file[j]) + ")"
     program_file = "".join(program_file)
 
-    program_file = re.sub(r"([@*{}\.\,:'\"<>\|A-Za-z+_=\-\?0-9\$]+)", r"'\1',", program_file)
+    program_file = re.sub(r"([/@*{}\.\,:'\"<>\|A-Za-z+_=\-\?0-9\$]+)", r"'\1',", program_file)
     program_file = "(" + re.sub("\\)", "),", program_file) + ")"
     return eval(program_file)
 

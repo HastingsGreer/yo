@@ -1,7 +1,7 @@
 .DELETE_ON_ERROR:
 
 prog.in: $(SRC)
-	cpp $(SRC) | grep -v // > prog.in
+	cpp $(SRC) > prog.in
 
 prog.IR: prog.in monomorphize.py
 	python3 monomorphize.py prog.in > prog.IR
