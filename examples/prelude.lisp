@@ -48,6 +48,10 @@
 	  (cons (car l) ((filter F) (cdr l))) 
 	  ((filter F) (cdr l))) 
       ((nilptr (List T)))))
+(defun ((reduce F) (List T) O ) (l o) (if l
+				       (F (car l) ((reduce F) (cdr l) o))
+				       o
+				       ))
 
 (defun ((. F) A) (a) (F a))
 (defun ((. F) (List A)) (l)
@@ -76,6 +80,7 @@
 		    (nil (infer ((. F) (car a) (car b))))))))
 (defun ((. F) A B) (a b) (F a b))
 
+(defun (cat (List T) (List T)) (a b) (cat_impl (reverse a) b))
 
 (defun - (x) (sub 0 x))
 
@@ -132,5 +137,7 @@
 			      (print_ 41)
 			      (print_ 10)
 			      ))
+
+(defun (print String) (s) (do ((map print_) ((cast (List I64)) s)) 0))
 
 #endif

@@ -1,14 +1,6 @@
 #include "prelude.lisp"
 
-(defun ppmhead () (do
-    (print_ 80)
-    (do (print_ 51)
-    (do (print_ 10)
-    (do (print 60)
-    (do (print 60)
-    (do (print_ 10)
-    (do (print 255)
-        (print_ 10)))))))))
+(defun ppmhead () (print "P3\n60 60\n255\n"))
 
 (defun sumsquare (a b) (eq 101 (sign (sub (add (mul a a) (mul b b)) 380))))
 
