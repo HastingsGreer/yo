@@ -8,7 +8,7 @@
 
 (defun main () (do
 		 (ppmhead)
-		 ((. print) ((. mul) (sing (sing (triple 100 200 210))) (circ ((. sub) (range 60) 30))))
+		 ((. print) ((. mul)  (circ ((. sub) (range 60) 30) ) (sing (sing (triple 100 200 210)))))
 		 0
 		 )
   
