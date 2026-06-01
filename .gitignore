@@ -6,3 +6,4 @@ a.out
 prog*
 __pycache__
 circle.ppm
+.DS_Store

@@ -46,6 +46,13 @@ def cons_lists(x):
         return (cons_lists(x[0]), cons_lists(x[1:]))
     return x
 
+def substitute(tree, env):
+    if type(tree) == tuple:
+        return tuple(substitute(t, env) for t in tree)
+    if tree in env:
+        return env[tree]
+    return tree
+
 if __name__ == "__main__":
 
     print(cons_lists(["A", "B", "C"]))

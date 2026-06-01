@@ -6,8 +6,8 @@ import re
 import parse
 import trees
 
-def lispprint(tup):
-    return str(tup).replace("'", "").replace(",","")
+from parse import lispprint
+from trees import substitute
 
 def compile_error(string):
     print(string, file=sys.stderr)
@@ -26,12 +26,6 @@ program = parse.get_program()
 
 signatures = [expand_sig(p) for p in program]
 
-def substitute(tree, env):
-    if type(tree) == tuple:
-        return tuple(substitute(t, env) for t in tree)
-    if tree in env:
-        return env[tree]
-    return tree
 
 @cache 
 def dispatch_impl(tree):

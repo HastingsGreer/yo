@@ -6,7 +6,10 @@ prog.in: $(SRC)
 prog.IR: prog.in monomorphize.py
 	python3 monomorphize.py prog.in > prog.IR
 
-prog.s: compiler.py prog.IR
+prog.IR.fast: prog.IR eliminator.py
+	python3 eliminator.py prog.IR > prog.IR.fast
+
+prog.s: compiler.py prog.IR.fast
 	python3 compiler.py prog.IR > prog.s
 
 prog: prog.s

@@ -4,7 +4,7 @@
 //todo stack structs
 
 #define STRUCT2(NAME, ARG1, ARG2, ARG1NAME, ARG2NAME)              \
-(defun (NAME ARG1 ARG2) (a b) ((cast NAME) (pair a b)))            \
+(defun (NAME ARG1 ARG2) (a b) ((cast NAME) (cons_ ((cast I64) a) (cons_ ((cast I64) b) 0))))            \
 (defun (ARG1NAME NAME) (n) (car ((cast (List ARG1)) n)))           \
 (defun (ARG2NAME NAME) (n) (car (cdr ((cast (List ARG2)) n))))
 
