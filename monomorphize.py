@@ -14,9 +14,13 @@ def compile_error(string):
     sys.exit(1)
 
 def expand_sig(p):
-    if type(p[1]) == str:
-        return (p[1],) + ("A", "B", "C", "D")[:len(p[2])]
-    return p[1]
+    if p[0] == "defun":
+        if type(p[1]) == str:
+            return (p[1],) + ("A", "B", "C", "D")[:len(p[2])]
+        return p[1]
+    if p[0] == "header":
+        return p[1]
+
 
 program = parse.get_program()
 
@@ -152,6 +156,11 @@ def remove_casts_infer(s_expr):
     if type(s_expr) == str and "<<main>:" in s_expr:
         return "main"
     return s_expr
+
+for p in program:
+    if p[0] == "backend":
+        print(lispprint(p))
+
 
 prog = sorted([lispprint(remove_casts_infer(m)) for m in methods])
 [print(p) for p in prog if not "FAILFAIL" in p]

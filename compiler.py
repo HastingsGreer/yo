@@ -172,8 +172,6 @@ arg3 = "-32(%rbp)"
 # builtins
 functions = [
     If(),
-    Instr("add"),
-    Instr("sub"),
     Function(
         "print_",
         1,
@@ -221,6 +219,12 @@ print("""
     """)
 
 for sexpr in program:
+    if sexpr[:2] == ("backend", "asm"):
+        if sexpr[2] == "Instr":
+            functions.append(Instr(sexpr[3]))
+
+            
+
     if sexpr[0] == "defun":
         name, args, body = sexpr[1:]
 

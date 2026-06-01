@@ -7,6 +7,8 @@ def cons_of_string(string):
     return "(cons " + str(ord(string[0])) + " " + cons_of_string(string[1:]) + ")"
 
 def parse(program_file):
+    program_file = program_file.split("\n")
+    program_file = "\n".join([p.split("//")[0] for p in program_file])
     program_file = program_file.split('"')
     for j in range(1, len(program_file), 2):
         program_file[j] = eval('"' + program_file[j] + '"')
