@@ -90,7 +90,7 @@ def inline(program):
 #going = True
 #while going:
 #    going, program = inline(program)
-inline(program)
+#inline(program)
 
             
 [print(parse.lispprint(p)) for p in program]

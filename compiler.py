@@ -70,6 +70,10 @@ class Function:
             stackpush("%rdx")
         if self.nargs >= 4:
             stackpush("%rcx")
+        if self.nargs >= 5:
+            stackpush("%r8")
+        if self.nargs >= 6:
+            stackpush("%r9")
 
         for step in self.asm:
             if type(step) == str:
@@ -88,6 +92,10 @@ class Function:
         for i in range(1, len(args)):
             if type(args[i]) != str:
                 args[i] = call(*args[i])
+        if len(args) >= 7:
+            iprint("movq    " + args[6] + ", %r9")
+        if len(args) >= 6:
+            iprint("movq    " + args[5] + ", %r8")
         if len(args) >= 5:
             iprint("movq    " + args[4] + ", %rcx")
         if len(args) >= 4:
@@ -156,7 +164,7 @@ def call(fname, *args):
     for function in functions:
         if function.name == fname:
             return function.call(fname, *args)
-    if fname[0] == '$' and fname[1:].isdecimal() or fname == "-8(%rbp)" or fname == "-16(%rbp)" or fname == "-24(%rbp)" or fname == "-32(%rbp)":
+    if fname[0] == '$' and fname[1:].isdecimal() or fname in arg_stack_offsets:
         iprint("movq   " + fname + ", %rax")
         return stackpush("%rax")
 
@@ -164,10 +172,7 @@ def call(fname, *args):
     raise Exception(str(fname) + " not defined")
 
 
-arg0 = "-8(%rbp)"
-arg1 = "-16(%rbp)"
-arg2 = "-24(%rbp)"
-arg3 = "-32(%rbp)"
+arg_stack_offsets = [f"-{8 * (i + 1)}(%rbp)" for i in range(6)]
 
 # builtins
 functions = [
@@ -235,7 +240,7 @@ for sexpr in program:
             ret = []
             for e in expr:
                 if e in args:
-                    ret.append([arg0, arg1, arg2, arg3][args.index(e)])
+                    ret.append(arg_stack_offsets[args.index(e)])
                 else:
                     if type(e) == str:
                         if re.match("[0-9]+", e):
