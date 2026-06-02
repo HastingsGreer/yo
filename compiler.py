@@ -229,7 +229,10 @@ for sexpr in program:
             functions.append(Instr(sexpr[3]))
         if sexpr[2] == "Linked":
             print(sexpr, file=sys.stderr)
-            functions.append(Function(sexpr[3], int(sexpr[4]), ["call " + sexpr[3] + "_@PLT"]))
+            functions.append(Function(sexpr[3], int(sexpr[4]), [
+                "andq    $0xFFFFFFFFFFFFFFF0, %rsp",
+
+                "call " + sexpr[3] + "_@PLT"]))
 
 
             
