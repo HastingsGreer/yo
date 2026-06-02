@@ -8,3 +8,4 @@ __pycache__
 circle.ppm
 .DS_Store
 examples/*.o
+build/examples/

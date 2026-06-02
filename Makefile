@@ -1,25 +1,25 @@
 .DELETE_ON_ERROR:
 
-prog.in: $(SRC)
-	cpp $(SRC) > prog.in
+build/$(SRC).in: $(SRC)
+	cpp $(SRC) > build/$(SRC).in
 
-prog.IR: prog.in monomorphize.py
-	python3 monomorphize.py prog.in > prog.IR
+build/$(SRC).IR: build/$(SRC).in monomorphize.py
+	python3 monomorphize.py build/$(SRC).in > build/$(SRC).IR
 
-prog.IR.fast: prog.IR eliminator.py
-	python3 eliminator.py prog.IR > prog.IR.fast
+build/$(SRC).IR.fast: build/$(SRC).IR eliminator.py
+	python3 eliminator.py build/$(SRC).IR > build/$(SRC).IR.fast
 
-prog.s: compiler.py prog.IR.fast
-	python3 compiler.py prog.IR.fast > prog.s
+build/$(SRC).s: compiler.py build/$(SRC).IR.fast
+	python3 compiler.py build/$(SRC).IR.fast > build/$(SRC).s
 
-examples/lib.o: examples/lib.c
-	gcc -o examples/lib.o -c examples/lib.c
+build/examples/lib.o: examples/lib.c
+	gcc -o build/examples/lib.o -c examples/lib.c
 
-prog: prog.s examples/lib.o
-	gcc prog.s examples/lib.o -o prog
+build/$(SRC): build/$(SRC).s build/examples/lib.o
+	gcc build/$(SRC).s examples/lib.o -o build/$(SRC)
 
-test: prog
-	./prog; echo
+test: build/$(SRC)
+	./build/$(SRC); echo
 
-mactest: prog.s
-	podman run --rm --platform linux/amd64 -v "$$PWD":/work -w /work docker.io/library/gcc:latest sh -c "gcc prog.s -o prog; ./prog"
+mactest: build/$(SRC).s
+	podman run --rm --platform linux/amd64 -v "$$PWD":/work -w /work docker.io/library/gcc:latest sh -c "gcc build/$(SRC).s -o build/$(SRC); ./build/$(SRC)"
