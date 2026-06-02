@@ -14,9 +14,9 @@
       (F ((cast A) (cdr_ ((cast I64) x))))))
 
 (defun ((dispatch F) (Union (A B C))) (x) 
-  (if (eq 0 (car_ ((cast I64) x)))
+  (if (= 0 (car_ ((cast I64) x)))
       (F ((cast A) (cdr_ ((cast I64) x))))
-      (if (eq 1 (car_ ((cast I64) x)))
+      (if (= 1 (car_ ((cast I64) x)))
           (F ((cast B) (cdr_ ((cast I64) x))))
           (F ((cast C) (cdr_ ((cast I64) x)))))))
 

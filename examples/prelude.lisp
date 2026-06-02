@@ -88,50 +88,51 @@
 (defun - (x) (sub 0 x))
 
 
-(defun (add I64 I64) (a b) (sub a (sub 0 b)))
+(defun (- I64 I64) (a b) (sub a b))
+(defun (+ I64 I64) (a b) (sub a (sub 0 b)))
 (defun (mul_pos T T) (a b) 
-  (if (neq a 0) 
-      (add b (mul (sub a 1) b)) 
+  (if (!= a 0) 
+      (+ b (* (- a 1) b)) 
       ((zero T))))
-(defun (mul T T) (a b) (if (eq (sign a) 100)
-			   (if (eq (sign b) 100)
+(defun (* T T) (a b) (if (= (sign a) 100)
+			   (if (= (sign b) 100)
 			       (mul_pos a b)
-			       (- (mul_pos a (sub 0 b))))
-			   (if (eq (sign b) 100)
-			       (sub 0 (mul_pos (sub 0 a) b))
-			       (mul_pos (sub 0 a) (sub 0 b)))))
+			       (- (mul_pos a (- 0 b))))
+			   (if (= (sign b) 100)
+			       (- 0 (mul_pos (- 0 a) b))
+			       (mul_pos (- 0 a) (- 0 b)))))
 			   
-(defun (abs I64) (x) (if (eq (sign x) 100) x (sub 0 x)))
-(defun eq (a b) (if (sub a b) 0 1))
-(defun neq (a b) (if (eq a b) 0 1))
+(defun (abs I64) (x) (if (= (sign x) 100) x (- 0 x)))
+(defun = (a b) (if (- a b) 0 1))
+(defun != (a b) (if (= a b) 0 1))
 (defun sign_impl  (x minx) 
-  (if (eq x 0) 
+  (if (= x 0) 
     100 
-    (if (eq minx 0) 
+    (if (= minx 0) 
         101 
-	(sign_impl (sub x 1) (sub minx 1)))))
+	(sign_impl (- x 1) (- minx 1)))))
 
-(defun sign  (x) (sign_impl x (sub 0 x)))
-(defun mod (num div) (if (eq (sign (sub num div)) 100) (mod (sub num div) div) num))
+(defun sign  (x) (sign_impl x (- 0 x)))
+(defun mod (num div) (if (= (sign (- num div)) 100) (mod (- num div) div) num))
 
-(defun divide (num div) (if (eq (sign (sub num div)) 100)
-			    (add 1 (divide (sub num div) div))
+(defun divide (num div) (if (= (sign (- num div)) 100)
+			    (+ 1 (divide (- num div) div))
 			    0))
 
 (defun range (n) 
   (if n 
-      (cons n (range (sub n 1))) 
+      (cons n (range (- n 1))) 
       (nil 0)))
 
-(defun (sum (List T)) (l) (if l (add (car l) (sum (cdr l))) ((zero T))))
+(defun (sum (List T)) (l) (if l (+ (car l) (sum (cdr l))) ((zero T))))
 (defun (reverse_impl (List T) (List T)) (l acc) (if l (reverse_impl (cdr l) (cons (car l) acc)) acc))
 (defun (reverse T) (l) (reverse_impl l ((nilptr  T))))
-(defun (printdigits I64) (x) (add 
+(defun (printdigits I64) (x) (+ 
 			 (if (divide x 10) (printdigits (divide x 10)) 0)
-			 (print_ (add 48 (mod x 10)))  
+			 (print_ (+ 48 (mod x 10)))  
 		))
 (defun (print I64) (x) (do 
-			 (if (eq (sign x) 101) (print_ 45) 0)
+			 (if (= (sign x) 101) (print_ 45) 0)
 			 (printdigits (abs x)) 
 			 (print_ 32)))
 (defun (print (List T)) (t) (do 

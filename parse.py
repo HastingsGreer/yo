@@ -18,7 +18,7 @@ def parse(program_file):
         program_file[j] = program_file[j].replace( "\\", "\\\\")
     program_file = "".join(program_file)
 
-    program_file = re.sub(r"([λ\\/@*{}\.\,:'\"<>\|A-Za-z+_=\-\?0-9\$]+)", r"'\1',", program_file)
+    program_file = re.sub(r"([\!λ\\/@*{}\.\,:'\"<>\|A-Za-z+_=\-\?0-9\$]+)", r"'\1',", program_file)
     program_file = "(" + re.sub("\\)", "),", program_file) + ")"
     return eval(program_file)
 

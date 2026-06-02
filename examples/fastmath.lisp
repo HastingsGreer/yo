@@ -9,7 +9,7 @@
 
 (header (imul I64 I64) I64)
 (backend asm Instr imul)
-(defun (mul I64 I64) (x y) (imul x y))
+(defun (* I64 I64) (x y) (imul x y))
 
 (defun (sign I64) (x) 
   (if x

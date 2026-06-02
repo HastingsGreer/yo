@@ -41,25 +41,26 @@
      )
    l))
 
-(defun (add I64 I64) (a b) (sub a (sub 0 b)))
-(defun (mul T T) (a b) 
-  (if (neq a 0) 
-      (add b (mul (sub a 1) b)) 
+(defun (+ I64 I64) (a b) (sub a (sub 0 b)))
+(defun (- I64 I64) (a b) (sub a b))
+(defun (* T T) (a b) 
+  (if (!= a 0) 
+      (+ b (* (- a 1) b)) 
       ((zero T))))
-(defun eq (a b) (if (sub a b) 0 1))
-(defun neq (a b) (if (eq a b) 0 1))
+(defun = (a b) (if (- a b) 0 1))
+(defun != (a b) (if (= a b) 0 1))
 (defun sign_impl  (x minx) 
-  (if (eq x 0) 
+  (if (= x 0) 
     100 
-    (if (eq minx 0) 
+    (if (= minx 0) 
         101 
-	(sign_impl (sub x 1) (sub minx 1)))))
+	(sign_impl (- x 1) (- minx 1)))))
 
-(defun sign  (x) (sign_impl x (sub 0 x)))
-(defun mod (num div) (if (eq (sign (sub num div)) 100) (mod (sub num div) div) num))
+(defun sign  (x) (sign_impl x (- 0 x)))
+(defun mod (num div) (if (= (sign (- num div)) 100) (mod (- num div) div) num))
 
-(defun divide (num div) (if (eq (sign (sub num div)) 100)
-			    (add 1 (divide (sub num div) div))
+(defun divide (num div) (if (= (sign (- num div)) 100)
+			    (+ 1 (divide (- num div) div))
 			    0))
 
 (defun ((filter F) (Option (List T))) (l) 
@@ -72,18 +73,18 @@
 
 (defun ((map F) (List T)) (l) ((map F) (Some l)))
 
-(defun range (n) (if n (Some (cons n (range (sub n 1)))) (nil 0)))
+(defun range (n) (if n (Some (cons n (range (- n 1)))) (nil 0)))
 
 //(defun main () ((unwrap 
 //		  (@ print_ car)  
 //		  (zero I64)) 
-//		(cdr (cdr (range (sub 102 32))))))
+//		(cdr (cdr (range (- 102 32))))))
 
-(defun (printdigits I64) (x) (add 
+(defun (printdigits I64) (x) (do
 			 (if (divide x 10) (printdigits (divide x 10)) 0)
-			 (print_ (add 48 (mod x 10)))  
+			 (print_ (+ 48 (mod x 10)))  
 		))
-(defun (print I64) (x) (add (printdigits x) (print_ 32)))
+(defun (print I64) (x) (do (printdigits x) (print_ 32)))
 
 (defun main () ((map print) (range 100)))
 
