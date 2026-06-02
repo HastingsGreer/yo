@@ -12,7 +12,10 @@ prog.IR.fast: prog.IR eliminator.py
 prog.s: compiler.py prog.IR.fast
 	python3 compiler.py prog.IR.fast > prog.s
 
-prog: prog.s
+examples/lib.o: examples/lib.c
+	gcc -o examples/lib.o -c examples/lib.c
+
+prog: prog.s examples/lib.o
 	gcc prog.s examples/lib.o -o prog
 
 test: prog

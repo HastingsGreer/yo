@@ -1,1 +1,0 @@
-long getfour(long x);
