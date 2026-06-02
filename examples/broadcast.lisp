@@ -1,4 +1,5 @@
 #include "prelude.lisp"
+#include "fastmath.lisp"
 
 (defun ppmhead () (print "P3\n60 60\n255\n"))
 
@@ -8,7 +9,7 @@
 
 (defun main () (do
 		 (ppmhead)
-		 ((. print) ((. mul)  (circ ((. sub) (range 60) 30) ) (sing (sing (triple 100 200 210)))))
+		 ((. print) ((. mul)  (circ ((. sub) (range 600) 300) ) (sing (sing (triple 100 200 210)))))
 		 0
 		 )
   

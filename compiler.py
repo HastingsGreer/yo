@@ -227,6 +227,10 @@ for sexpr in program:
     if sexpr[:2] == ("backend", "asm"):
         if sexpr[2] == "Instr":
             functions.append(Instr(sexpr[3]))
+        if sexpr[2] == "Linked":
+            print(sexpr, file=sys.stderr)
+            functions.append(Function(sexpr[3], int(sexpr[4]), ["call " + sexpr[3] + "_@PLT"]))
+
 
             
 

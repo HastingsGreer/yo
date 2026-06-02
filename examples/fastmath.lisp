@@ -1,4 +1,5 @@
-#include "prelude.lisp"
+#ifndef fastmath
+#define fastmath
 
 (header (shl I64 I64) I64)
 (backend asm Instr shl)
@@ -17,4 +18,4 @@
 
 
 // (defun main () (print (sign 0)))
-#include "broadcast.lisp"
+#endif#

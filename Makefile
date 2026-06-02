@@ -13,7 +13,7 @@ prog.s: compiler.py prog.IR.fast
 	python3 compiler.py prog.IR.fast > prog.s
 
 prog: prog.s
-	gcc prog.s -o prog
+	gcc prog.s examples/lib.o -o prog
 
 test: prog
 	./prog; echo
