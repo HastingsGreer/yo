@@ -1,6 +1,7 @@
 .DELETE_ON_ERROR:
 
 build/$(SRC).in: $(SRC)
+	@mkdir -p build/examples
 	cpp $(SRC) > build/$(SRC).in
 
 build/$(SRC).IR: build/$(SRC).in monomorphize.py
@@ -16,7 +17,7 @@ build/examples/lib.o: examples/lib.c
 	gcc -o build/examples/lib.o -c examples/lib.c
 
 build/$(SRC): build/$(SRC).s build/examples/lib.o
-	gcc build/$(SRC).s examples/lib.o -o build/$(SRC)
+	gcc build/$(SRC).s build/examples/lib.o -o build/$(SRC)
 
 test: build/$(SRC)
 	./build/$(SRC); echo

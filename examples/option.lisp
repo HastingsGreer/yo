@@ -1,5 +1,6 @@
 (header ((cast Y) X) Y)
 (header (sub I64 I64) I64)
+(backend asm Instr sub)
 (header (infer T) T)
 (header (cons_ I64 I64) I64)
 (header (car_ I64) I64)
