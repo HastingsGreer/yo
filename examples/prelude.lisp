@@ -25,8 +25,11 @@
 (defun (do X Y) (x y) y)
 (defun (do A X Y ) (a x y) y)
 (defun (do B A X Y ) (b a x y) y)
+(defun (do C B A X Y ) (c b a x y) y)
+(defun (do D C B A X Y ) (d c b a x y) y)
 
 (defun ((nilptr T)) () ((cast T) 0))
+(defun ((sentinel T)) () ((cast T) 0))
 (defun ((zero I64)) () ((cast I64) 0))
 (defun (nil T) (x) ((nilptr (List T))))
 (defun ((nil T)) () ((nilptr (List T))))
@@ -35,10 +38,12 @@
 (defun (car (List T)) (l) ((cast T) (car_ ((cast I64) l))))
 (defun (cdr (List T)) (l) ((cast (List T)) (cdr_ ((cast I64) l))))
 
-(defun (sing T) (a) (cons a ((nil T))))
-(defun (pair T T) (a b) (cons a (cons b ((nil T)))))
-(defun (triple T T T) (a b c) (cons a (cons b (cons c ((nil T))))))
-(defun (quad T T T T) (a b c d) (cons a (cons b (cons c (cons d ((nil T)))))))
+(defun (list T) (a) (cons a ((nil T))))
+(defun (list T T) (a b) (cons a (cons b ((nil T)))))
+(defun (list T T T) (a b c) (cons a (cons b (cons c ((nil T))))))
+(defun (list T T T T) (a b c d) (cons a (cons b (cons c (cons d ((nil T)))))))
+(defun (list T T T T T) (a b c d e) (cons a (cons b (cons c (cons d (cons e ((nil T))))))))
+(defun (list T T T T T T) (a b c d e f) (cons a (cons b (cons c (cons d (cons e (cons f((nil T)))))))))
 
 (defun ((map F) (List T)) (l) 
   (if l 
@@ -94,28 +99,28 @@
   (if (!= a 0) 
       (+ b (* (- a 1) b)) 
       ((zero T))))
-(defun (* T T) (a b) (if (= (sign a) 100)
-			   (if (= (sign b) 100)
+(defun (* T T) (a b) (if (= (negative? a) 0)
+			   (if (= (negative? b) 0)
 			       (mul_pos a b)
 			       (- (mul_pos a (- 0 b))))
-			   (if (= (sign b) 100)
+			   (if (= (negative? b) 0)
 			       (- 0 (mul_pos (- 0 a) b))
 			       (mul_pos (- 0 a) (- 0 b)))))
 			   
-(defun (abs I64) (x) (if (= (sign x) 100) x (- 0 x)))
+(defun (abs I64) (x) (if (= (negative? x) 0) x (- 0 x)))
 (defun = (a b) (if (- a b) 0 1))
 (defun != (a b) (if (= a b) 0 1))
-(defun sign_impl  (x minx) 
+(defun negative?_impl  (x minx) 
   (if (= x 0) 
-    100 
+    0 
     (if (= minx 0) 
-        101 
-	(sign_impl (- x 1) (- minx 1)))))
+        1 
+	(negative?_impl (- x 1) (- minx 1)))))
 
-(defun sign  (x) (sign_impl x (- 0 x)))
-(defun mod (num div) (if (= (sign (- num div)) 100) (mod (- num div) div) num))
+(defun negative?  (x) (negative?_impl x (- 0 x)))
+(defun mod (num div) (if (= (negative? (- num div)) 0) (mod (- num div) div) num))
 
-(defun divide (num div) (if (= (sign (- num div)) 100)
+(defun divide (num div) (if (= (negative? (- num div)) 0)
 			    (+ 1 (divide (- num div) div))
 			    0))
 
@@ -132,7 +137,7 @@
 			 (print_ (+ 48 (mod x 10)))  
 		))
 (defun (print I64) (x) (do 
-			 (if (= (sign x) 101) (print_ 45) 0)
+			 (if (= (negative? x) 1) (print_ 45) 0)
 			 (printdigits (abs x)) 
 			 (print_ 32)))
 (defun (print (List T)) (t) (do 

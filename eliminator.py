@@ -48,7 +48,7 @@ def remove_renames(program):
     for i, definition in enumerate(program):
         if definition[0] == "defun":
             defun, name, args, body = definition
-            if len(args) == 1 and len(body) == 2 and type(body[0]) == str and type(body[1]) == str:
+            if len(args) == 1 and len(body) == 2 and type(body[0]) == str and type(body[1]) == str and body[1] == args[0]:
                 program = list(program)
                 del program[i]
                 program = tuple(program)

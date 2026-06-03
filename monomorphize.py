@@ -26,6 +26,15 @@ program = parse.get_program()
 
 signatures = [expand_sig(p) for p in program]
 
+if not ("main",) in signatures:
+    program = list(program)
+    program[-1] = ("defun", "main", (), program[-1])
+    program = tuple(program)
+    signatures = [expand_sig(p) for p in program]
+
+#[print(lispprint(p), file=sys.stderr) for p in program]
+
+
 
 @cache 
 def dispatch_impl(tree):

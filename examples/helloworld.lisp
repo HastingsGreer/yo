@@ -1,3 +1,3 @@
 #include "prelude.lisp"
-(defun main () (print "hello world\n"))
+(print "hello world\n")
 

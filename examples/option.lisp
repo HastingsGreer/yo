@@ -11,6 +11,7 @@
 (defun ((zero I64)) () ((cast I64) 0))
 
 (defun ((nilptr T)) () ((cast (Option T)) 0))
+(defun (None T) (t) ((cast (Option T)) 0))
 (defun (nil T) (x) ((nilptr (List T))))
 
 (defun ((unwrap T F) (Option X)) (o) (if o (T ((cast X) o)) (F)))
@@ -24,13 +25,13 @@
 (defun (cdr (Option (List T))) (l) ((unwrap cdr (nilptr (List T))) l))
 
 
-(defun ((@ F G) X) (x) (F (G x)))
-(defun ((@ F G H) X) (x) (F (G (H x))))
-(defun ((@ F G H I) X) (x) (F (G (H (I x)))))
+(defun ((F . G) X) (x) (F (G x)))
+(defun ((F . G . H) X) (x) (F (G (H x))))
+(defun ((F . G . H . I) X) (x) (F (G (H (I x)))))
 
-(defun ((@ F G)) () (F (G)))
-(defun ((@ F G H)) () (F (G (H))))
-(defun ((@ F G H I)) () (F (G (H (I)))))
+(defun ((F . G)) () (F (G)))
+(defun ((F . G . H)) () (F (G (H))))
+(defun ((F . G . H . I)) () (F (G (H (I)))))
 
 
 (defun ((mapyes F) (List T)) (l) (Some (cons (F (car l)) ((map F) (cdr l)))))
@@ -49,17 +50,17 @@
       ((zero T))))
 (defun = (a b) (if (- a b) 0 1))
 (defun != (a b) (if (= a b) 0 1))
-(defun sign_impl  (x minx) 
+(defun negative?_impl  (x minx) 
   (if (= x 0) 
-    100 
+    0 
     (if (= minx 0) 
-        101 
-	(sign_impl (- x 1) (- minx 1)))))
+        1 
+	(negative?_impl (- x 1) (- minx 1)))))
 
-(defun sign  (x) (sign_impl x (- 0 x)))
-(defun mod (num div) (if (= (sign (- num div)) 100) (mod (- num div) div) num))
+(defun negative?  (x) (negative?_impl x (- 0 x)))
+(defun mod (num div) (if (= (negative? (- num div)) 0) (mod (- num div) div) num))
 
-(defun divide (num div) (if (= (sign (- num div)) 100)
+(defun divide (num div) (if (= (negative? (- num div)) 0)
 			    (+ 1 (divide (- num div) div))
 			    0))
 

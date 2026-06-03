@@ -4,53 +4,45 @@
 (defun ((Union (A B)) B) (b) ((cast (Union (A B))) (cons_ 1 ((cast I64) b))))
 
 
-(defun ((Union (A B C)) A) (a) ((cast (Union (A B C))) (cons_ 0 ((cast I64) a))))
-(defun ((Union (A B C)) B) (b) ((cast (Union (A B C))) (cons_ 1 ((cast I64) b))))
-(defun ((Union (A B C)) C) (b) ((cast (Union (A B C))) (cons_ 2 ((cast I64) b))))
+(defun ((Union (A B C)) A) (x) ((cast (Union (A B C))) (cons_ 0 ((cast I64) x))))
+(defun ((Union (A B C)) B) (x) ((cast (Union (A B C))) (cons_ 1 ((cast I64) x))))
+(defun ((Union (A B C)) C) (x) ((cast (Union (A B C))) (cons_ 2 ((cast I64) x))))
 
-(defun ((dispatch F) (Union (A B))) (x) 
+(defun ((match F) (Union (A B))) (x) 
   (if (car_ ((cast I64) x)) 
       (F ((cast B) (cdr_ ((cast I64) x))))
       (F ((cast A) (cdr_ ((cast I64) x))))))
 
-(defun ((dispatch F) (Union (A B C))) (x) 
+(defun ((match F) (Union (A B C))) (x) 
   (if (= 0 (car_ ((cast I64) x)))
       (F ((cast A) (cdr_ ((cast I64) x))))
       (if (= 1 (car_ ((cast I64) x)))
           (F ((cast B) (cdr_ ((cast I64) x))))
           (F ((cast C) (cdr_ ((cast I64) x)))))))
 
-// (defun (ucons T (List (Union U))) (x l) (cons ((Union U) x) l))
+(defun (ucons T (List (Union U))) (x l) (cons ((Union U) x) l))
 
+(defun (print (Union T)) (u) ((match print) u))
 
-(defun (print (Union T)) (u) ((dispatch print) u))
-
-
-
-STRUCT2(StringTree, (Union (I64 String StringTree)), (Union (None StringTree)), child, nextSibling)
-
+STRUCT2((Tree T), (Union (T (Tree T))), (Union (None (Tree T))), child, nextSibling)
 (defun (None) () ((cast None) 0))
-(defun StringTree (child rest) (StringTree ((Union (I64 String StringTree)) child)
-					   ((Union (None StringTree)) rest)))
+(defun ((Tree T) X Y) (child rest) ((Tree T) ((Union (T (Tree T))) child)
+					   ((Union (None (Tree T))) rest)))
 
 (defun (print None) (n) (print "None"))
 (defun (printSiblings None) (n) 0)
 
-(defun (printSiblings StringTree) (st) (do
+(defun (printSiblings (Tree String)) (st) (do
 					 (print (child st))
 					 (print " ")
-					 ((dispatch printSiblings) (nextSibling st))))
-(defun (print StringTree) (st) (do 
+					 ((match printSiblings) (nextSibling st))))
+(defun (print (Tree String)) (st) (do 
 				 (print "(")
 				 (printSiblings st)
 				 (print ")")
 				 ))
 
 
-// Runtime tagged lists: 
+#define St (Tree String)
 
-// (defun main () (print ((Union (String I64)) "Horse" )))
-
-// (defun main () (print (ucons 100 (ucons "Horse " ( ucons 332 ((nil (Union (String I64)))))))))
-
-(defun main () (print (StringTree (StringTree "ConsCell" (StringTree 87 (None)))  (StringTree "goodby" (None)))))
+(defun main () (print (St (St "ConsCell" (St "87" (None)))  (St "goodby" (None)))))
