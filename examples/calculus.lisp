@@ -1,21 +1,18 @@
 #include "prelude.lisp"
-
 (defun (print X_) (_) (print "X "))
 (defun (print Y_) (_) (print "Y "))
 (defun (print X) (_) (print X))
 (defun (print (Mul X Y)) (_) (do 
-			       (print "(")
-			       (print ((sentinel X)))
-			       (print "* ") 
-			       (print ((sentinel Y)))
-			       (print ")")))
+    (print "(") (print ((sentinel X)))
+    (print "* ") 
+    (print ((sentinel Y)))
+    (print ")")))
 (defun (print (Add X Y)) (_) (do 
-			       (print "(")
-			       (print ((sentinel X)))
-			       (print "+ ") 
-			       (print ((sentinel Y)))
-			       (print ")")))
-
+    (print "(")
+    (print ((sentinel X)))
+    (print "+ ") 
+    (print ((sentinel Y)))
+    (print ")")))
 
 (defun (Add A B) (a b) ((sentinel (Add A B))))
 (defun (Add 0 B) (a b) b)

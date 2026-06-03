@@ -149,4 +149,6 @@
 
 (defun (print String) (s) (do ((map print_) ((cast (List I64)) s)) 0))
 
+(defun ((λx. BODY) X) (x) BODY)
+
 #endif
