@@ -10,11 +10,19 @@ def match(tree, pattern, environ):
         else:
             return environ | {pattern: tree} 
     elif type(pattern) == tuple:
+        if len(pattern) == 0:
+            if len(tree) == 0:
+                return environ
+            else:
+                return False
+        if len(tree) == 0:
+            return False
+        
         if type(tree) == tuple:
             leftmatch = match(tree[0], pattern[0], environ)
             if leftmatch is False:
                 return False
-            rightmatch = match(tree[1], pattern[1], leftmatch)
+            rightmatch = match(tree[1:], pattern[1:], leftmatch)
             if rightmatch is False:
                 return False
             return rightmatch
@@ -25,26 +33,7 @@ def match(tree, pattern, environ):
     return False
 
 def subset(a, b):
-    a = cons_lists(a)
-    b = cons_lists(b)
-    ret = match(a, b, {})
-    if ret is False:
-        return False
-    return {q: uncons(r) for q, r in ret.items()}
-
-def uncons(x):
-    if x == "zILCH":
-        return ()
-    if type(x) == tuple:
-        return (uncons(x[0]),) + uncons(x[1])
-    return x
-
-def cons_lists(x):
-    if type(x) == list or type(x) == tuple:
-        if len(x) == 0:
-            return "zILCH"
-        return (cons_lists(x[0]), cons_lists(x[1:]))
-    return x
+    return match(a, b, {})
 
 def substitute(tree, env):
     if type(tree) == tuple:
