@@ -14,7 +14,9 @@ long  cons_(long a, long b) {
 long  car_(long a) {return ((long*)a)[0];}
 long  cdr_(long a) {return ((long*)a)[1];}
 long  and(long a, long b) {return a & b;}
-long  print_(a) {
+long  imul(long a, long b) {return a * b;}
+long  shr(long a, long b) {return ((unsigned long) a) >> ((unsigned long) b);}
+long  print_(long a) {
     printf("%c", a);
     return 0;
     }
