@@ -178,6 +178,17 @@ arg_stack_offsets = [f"-{8 * (i + 1)}(%rbp)" for i in range(6)]
 functions = [
     If(),
     Function(
+        "read_",
+        0,
+        [
+            "movq $0, %rax",
+            "movq $1, %rdx",
+            "subq $8, %rsp",
+            "leaq -8(%rbp), %rsi",
+            "syscall",
+            "movq -8(%rbp), %rax",
+            ]),
+    Function(
         "print_",
         1,
         [
