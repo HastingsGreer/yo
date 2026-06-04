@@ -124,10 +124,11 @@
 			    (+ 1 (divide (- num div) div))
 			    0))
 
-(defun range (n) 
+(defun range_impl (n) 
   (if n 
-      (cons n (range (- n 1))) 
+      (cons (- n 1) (range_impl (- n 1))) 
       (nil 0)))
+(defun range (n) (reverse (range_impl n)))
 
 (defun (sum (List T)) (l) (if l (+ (car l) (sum (cdr l))) ((zero T))))
 (defun (reverse_impl (List T) (List T)) (l acc) (if l (reverse_impl (cdr l) (cons (car l) acc)) acc))
