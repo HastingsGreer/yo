@@ -22,6 +22,7 @@
 (header (if I64 T T) T)
 (header (if (List Q) T T) T)
 
+(defun (do Y ) (y) y)
 (defun (do X Y) (x y) y)
 (defun (do A X Y ) (a x y) y)
 (defun (do B A X Y ) (b a x y) y)

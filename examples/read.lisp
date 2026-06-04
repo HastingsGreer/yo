@@ -2,4 +2,8 @@
 
 (header (read_) I64)
 
-(print_ (+ 101 (read_)))
+(defun read (x) (read_))
+
+(do
+(print_ (read_))
+)

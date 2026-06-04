@@ -182,11 +182,14 @@ functions = [
         0,
         [
             "movq $0, %rax",
+            "movq $0, %rdi",
             "movq $1, %rdx",
             "subq $8, %rsp",
             "leaq -8(%rbp), %rsi",
+            "movq $0, -8(%rbp)",
             "syscall",
             "movq -8(%rbp), %rax",
+            "andq $0xFF, %rax"
             ]),
     Function(
         "print_",
