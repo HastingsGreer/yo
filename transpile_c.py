@@ -20,6 +20,14 @@ long  print_(long a) {
     printf("%c", a);
     return 0;
     }
+long read_() {
+
+   int ret = getchar();
+   if (ret == EOF) {
+   return 0;
+   }
+   return (long) ret;
+}
 
 """
 print(prelude)
@@ -31,17 +39,19 @@ def jsprint(expr):
     if len(expr) == 0:
         return expr
     if type(expr) == str:
+        if (expr == "char"):
+            return "character_lmao"
         return expr
     if expr[0] == "if":
         return jsprint(expr[1]) + " ? " + jsprint(expr[2]) + " : " + jsprint(expr[3])
     return expr[0] + "(" + ", ".join(jsprint(e) for e in expr[1:]) + ")"
 for p in program:
     if p[0] == "defun":
-        print ( "long " + p[1] + "(" + ("long " if p[2] else "") + ", long ".join(p[2]) + ");")
+        print ( "long " + p[1] + "(" + ("long " if p[2] else "") + ", long ".join(map(jsprint, p[2])) + ");")
 
 for p in program:
     if p[0] == "defun":
         #print(p)
-        print ( "long " + p[1] + "(" + ("long " if p[2] else "") + ", long ".join(p[2]) + ") { return " + 
+        print ( "long " + p[1] + "(" + ("long " if p[2] else "") + ", long ".join(map(jsprint, p[2])) + ") { return " + 
     jsprint(p[3]) + ";}")
 

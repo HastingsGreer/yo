@@ -8,6 +8,16 @@
 (defun (ARG1NAME NAME) (n) (car ((cast (List ARG1)) n)))           \
 (defun (ARG2NAME NAME) (n) (car (cdr ((cast (List ARG2)) n))))
 
+#define STRUCT1(NAME, ARG1, ARG1NAME)              \
+(defun (NAME ARG1) (a) ((cast NAME) a))            \
+(defun (ARG1NAME NAME) (n) ((cast ARG1) n))           \
+
+#define STRUCT3(NAME, ARG1, ARG2, ARG3, ARG1NAME, ARG2NAME, ARG3NAME)              \
+(defun (NAME ARG1 ARG2 ARG3) (a b c) ((cast NAME) (cons_ ((cast I64) a) (cons_ ((cast I64) b) (cons_ ((cast I64) c) 0)))))            \
+(defun (ARG1NAME NAME) (n) (car ((cast (List ARG1)) n)))           \
+(defun (ARG2NAME NAME) (n) (car (cdr ((cast (List ARG2)) n)))) \
+(defun (ARG3NAME NAME) (n) (car (cdr (cdr ((cast (List ARG3)) n)))))
+
 #define TRUE 1
 #define FALSE 0
 
@@ -17,8 +27,9 @@
 (header (infer T) T)
 (header (cons_ I64 I64) I64)
 (header (car_ I64) I64)
-(header (print_ I64) I64)
 (header (cdr_ I64) I64)
+(header (print_ I64) I64)
+(header (read_) I64)
 (header (if I64 T T) T)
 (header (if (List Q) T T) T)
 
@@ -28,6 +39,18 @@
 (defun (do B A X Y ) (b a x y) y)
 (defun (do C B A X Y ) (c b a x y) y)
 (defun (do D C B A X Y ) (d c b a x y) y)
+
+(defun ((F . G) X) (x) (F (G x)))
+(defun ((F . G . H) X) (x) (F (G (H x))))
+(defun ((F . G . H . I) X) (x) (F (G (H (I x)))))
+
+(defun ((F . G)) () (F (G)))
+(defun ((F . G . H)) () (F (G (H))))
+(defun ((F . G . H . I)) () (F (G (H (I)))))
+
+(defun ((\ X . BODY) ARGTYPE) (X) BODY)
+(defun || (a b) (if a 1 b))
+(defun || (a b c) (if a 1 (if b 1 c)))
 
 (defun ((nilptr T)) () ((cast T) 0))
 (defun ((sentinel T)) () ((cast T) 0))
@@ -149,8 +172,32 @@
 			      (print_ 10)
 			      ))
 
-(defun (print String) (s) (do ((map print_) ((cast (List I64)) s)) 0))
+(header (if Char T T) T)
+(header (if String T T) T)
+STRUCT1(Char, I64, :charcode)
+STRUCT1(String, (List Char), :chars)
 
-(defun ((λx. BODY) X) (x) BODY)
+(defun (car String) (s) (car (:chars s))) 
+(defun (cdr String) (s) (String (cdr (:chars s))) )
+(defun (cons Char String) (c s) (String (cons c (:chars s))))
+
+(defun (print Char) (char) (print_ (:charcode char)))
+(defun (= Char Char) (a b) (= (:charcode a) (:charcode b)))
+(defun (= String Char) (s c) (= (:charcode (car (:chars s))) (:charcode c)))
+(defun (= Char String) (c s) (= (:charcode (car (:chars s))) (:charcode c)))
+(defun (= String String) (a b) 
+  (if a
+    (if b
+      (if (= (car a) (car b))
+	(= (cdr a) (cdr b))
+	0)
+      0)
+    (if b
+      0
+      1)))
+
+(defun (print String) (s) (do 
+			    ((map print) (:chars s)) 0))
+
 
 #endif
