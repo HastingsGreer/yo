@@ -112,7 +112,9 @@
 		    (nil (infer ((. F) (car a) (car b))))))))
 (defun ((. F) A B) (a b) (F a b))
 
-(defun (cat (List T) (List T)) (a b) (cat_impl (reverse a) b))
+(defun cat_impl (a b) (if a (cons (car a) (cat_impl (cdr a) b)) b))
+(defun (cat (List T) (List T)) (a b) (cat_impl a b))
+(defun (cat String String) (a b) (String (cat (:chars a) (:chars b))))
 
 (defun - (x) (sub 0 x))
 

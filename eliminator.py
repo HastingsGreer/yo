@@ -7,7 +7,8 @@ def munge(name):
         return name
     if name in mungemap:
         return mungemap[name]
-    mungemap[name] = "m" + str(len(mungemap))
+    mungemap[name] = "".join([a for a in name if a.isalpha()])[:14] + str(len(mungemap))
+
     return mungemap[name]
 def mungetree(t):
     if type(t) == tuple:

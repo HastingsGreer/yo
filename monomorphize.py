@@ -12,6 +12,8 @@ from trees import substitute
 def compile_error(string):
     print(string, file=sys.stderr)
     sys.exit(1)
+def errprint(*x):
+    print(* map(lispprint, x), file=sys.stderr)
 
 def expand_sig(p):
     if p[0] == "defun":
@@ -33,7 +35,6 @@ if not ("main",) in signatures:
     program = tuple(program)
     signatures = [expand_sig(p) for p in program]
 
-#[print(lispprint(p), file=sys.stderr) for p in program]
 
 
 
@@ -68,10 +69,11 @@ def dispatch(tree, error_info):
         "No type matches" + lispprint(tree))
 
     if len(specific) != 1:
+        print(lispprint(error_info) + "\n Finally, matching methods:", file=sys.stderr)
         for c in candidates:
             print(lispprint(c), lispprint(program[c[0]]), file=sys.stderr)
-        compile_error("error_info was" + lispprint(error_info) + "\n" + 
-        "No most specificic method for" + lispprint(tree))
+        compile_error( 
+        "No most specific method for" + lispprint(tree))
     return specific[0]
 
 def walk_tree(s_expr, env, error_info=None):
@@ -83,7 +85,7 @@ def walk_tree(s_expr, env, error_info=None):
         first_encounter = 1 == sum([m == method_stack[-1] for m in method_stack])
 
         if fname == "if" and len(s_expr) != 4:
-            print(error_info, file=sys.stderr)
+            errprint(error_info)
             compile_error("Wrong number of args to if")
 
         if not first_encounter:
@@ -114,7 +116,9 @@ def dispatch_then_instantiate(call_sig, error_info=None):
         name = call_sig[0]
         if type(name) != str:
             name = mangle(name)
-        return substitute(program[i][2], env), name
+        return_type = substitute(program[i][2], env)
+        memo[call_sig] = return_type, name
+        return return_type, name
 
     if program[i][0] == "defun":
         args = program[i][2]
@@ -136,8 +140,8 @@ def dispatch_then_instantiate(call_sig, error_info=None):
             memo[call_sig] = return_type, name
         methods.add(("defun", name, args, monomorphised_body))
         return return_type, name
-def mangle(tup):
 
+def mangle(tup):
     if type(tup) == tuple:
         return "<" + ":".join(map(mangle, tup)) + ">"
     def charmangle(c:str):
@@ -147,16 +151,8 @@ def mangle(tup):
     return "".join(map(charmangle, tup))
 
 memo = {}
-
 methods = set()
-
-again = 1
-while again:
-   memo = {}
-   dispatch_then_instantiate(("main",))
-   n_methods = len(set(m[1] for m in methods))
-   n_filled = len(set(m[1] for m in methods if not "FAILFAIL" in str(m[3])))
-   again = n_methods != n_filled
+dispatch_then_instantiate(("main",))
 
 def remove_casts_infer(s_expr):
     if type(s_expr) == tuple and len(s_expr) > 0:

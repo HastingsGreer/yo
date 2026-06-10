@@ -2,7 +2,10 @@ import parse
 prelude = """
 function sub(a, b) {return a - b}
 function cons_(a, b) {return [a, b]}
-function car_(a) {return a[0]}
+function car_(a) {
+assert(typeof(a) == typeof([]))
+return a[0]
+}
 function cdr_(a) {return a[1]}
 function and(a, b) {return a & b}
 output = ""
@@ -15,6 +18,7 @@ output = output + String.fromCharCode(a);
 }
 return 0}
 let fs = require('fs')
+let assert = require('assert')
 
 function read_() {
   let buffer = Buffer.alloc(1)
