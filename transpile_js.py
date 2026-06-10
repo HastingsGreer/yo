@@ -14,6 +14,13 @@ output = "";
 output = output + String.fromCharCode(a); 
 }
 return 0}
+let fs = require('fs')
+
+function read_() {
+  let buffer = Buffer.alloc(1)
+  fs.readSync(0, buffer, 0, 1)
+  return buffer[0]
+}
 
 main()
 console.log(output);

@@ -25,14 +25,17 @@ test: build/$(SRC)
 mactest: build/$(SRC).s
 	podman run -i --rm --platform linux/amd64 -v "$$PWD":/work -w /work docker.io/library/gcc:latest sh -c "gcc build/$(SRC).s -o build/$(SRC); ./build/$(SRC)"
 
-js: build/$(SRC).IR.fast transpile_js.py
+build/$(SRC).js: build/$(SRC).IR.fast transpile_js.py
 	python3 transpile_js.py build/$(SRC).IR.fast > build/$(SRC).js
+
+jstest: build/$(SRC).js
+	node build/$(SRC).js
 
 build/$(SRC).c: build/$(SRC).IR.fast transpile_c.py
 	python3 transpile_c.py build/$(SRC).IR.fast > build/$(SRC).c
 
 build/$(SRC).out: build/$(SRC).c
-	gcc -O3 build/$(SRC).c -o build/$(SRC).out
+	gcc -O0 build/$(SRC).c -o build/$(SRC).out
 
 ctest: build/$(SRC).out
 	build/$(SRC).out
