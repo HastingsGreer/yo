@@ -4,17 +4,20 @@
   (if (!= test 1) 
       (if (!= (mod prime test) 0) 
 	  (prime_impl prime (- test 1)) 
-	  FALSE) 
-      TRUE))
+	  0) 
+      1))
 (defun isprime (p) 
+  (if (!= p 0)
   (if (!= p 1) 
       (prime_impl p (- p 1)) 
-      FALSE))
+      0) 0))
 
 
 
 
-// (defun main () ((map print) ((filter isprime) (range 500))))
+// (defun main () ((map print) ((filter isprime) (range 49))))
+// (defun main () (print (isprime 1)))
+
 
 (defun zero_ (x) 0)
 (defun (Consint I64) (n) ((cast Consint) ((map zero_) (range n))))
@@ -77,4 +80,5 @@ STRUCT2( (Signedof T), T, T, first, second)
 
 
 (defun cons_negative? (x) ((Signedof Consint) (Consint x)))
- (defun main () ((map print) ((map I64) ((map I64) ((filter isprime) ((map cons_negative?) (range 90)))))))
+(defun main () ((map print) ((map I64) ((map I64) ((filter isprime) ((map cons_negative?) (range 40)))))))
+

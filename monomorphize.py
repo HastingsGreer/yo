@@ -78,14 +78,19 @@ def walk_tree(s_expr, env, error_info=None):
         return env[s_expr], s_expr
     if type(s_expr) == tuple:
         fname = s_expr[0]
+        method_stack = [m.split("function:")[0].strip() for m in error_info.split("method:")]
+        first_encounter = 1 == sum([m == method_stack[-1] for m in method_stack])
+
         if fname == "if" and len(s_expr) != 4:
             print(error_info, file=sys.stderr)
             compile_error("Wrong number of args to if")
 
-        if fname == "if" and random.random() > .9 and len(s_expr) == 4:
-            return walk_tree(s_expr[2], env)[0], "FAILFAIL"
-        if fname == "if" and random.random() > .3 and len(s_expr) == 4:
-            return walk_tree(s_expr[3], env)[0], "FAILFAIL"
+        if not first_encounter:
+
+            if fname == "if" and random.random() > .5 and len(s_expr) == 4:
+                return walk_tree(s_expr[2], env, error_info)[0], "FAILFAIL"
+            if fname == "if" and random.random() > .001 and len(s_expr) == 4:
+                return walk_tree(s_expr[3], env, error_info)[0], "FAILFAIL"
         arg_walks = tuple(walk_tree(se, env, error_info) for se in s_expr[1:])
         arg_types = tuple(a[0] for a in arg_walks)
         arg_exprs = tuple(a[1] for a in arg_walks)
@@ -156,7 +161,7 @@ def remove_casts_infer(s_expr):
     if type(s_expr) == tuple and len(s_expr) > 0:
         s_expr = list(s_expr)
         if type(s_expr[0]) == str:
-            if "<cast" in s_expr[0]:
+            if "<cast" == s_expr[0][:5]:
                 return remove_casts_infer(s_expr[1])
             if "infer" == s_expr[0]:
                 return 0

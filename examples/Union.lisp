@@ -10,6 +10,18 @@
 (defun ((Union (A B C)) C) (x) ((cast (Union (A B C))) (cons_ 2 ((cast I64) x))))
 (defun ((Union (A B C)) (Union (A B C))) (b) b)
 
+(defun ((bind F) (Union (A B))) (x) 
+  (if (car_ ((cast I64) x)) 
+      ((Union (A B)) (F ((cast B) (cdr_ ((cast I64) x)))))
+      ((Union (A B)) (F ((cast A) (cdr_ ((cast I64) x)))))))
+
+(defun ((bind F) (Union (A B C))) (x) 
+  (if (= 0 (car_ ((cast I64) x)))
+      ((Union (A B C)) (F ((cast A) (cdr_ ((cast I64) x)))))
+      (if (= 1 (car_ ((cast I64) x)))
+          ((Union (A B C)) (F ((cast B) (cdr_ ((cast I64) x)))))
+          ((Union (A B C)) (F ((cast C) (cdr_ ((cast I64) x))))))))
+
 (defun ((match F) (Union (A B))) (x) 
   (if (car_ ((cast I64) x)) 
       (F ((cast B) (cdr_ ((cast I64) x))))
@@ -18,6 +30,10 @@
   (if (car_ ((cast I64) x)) 
       (F z ((cast B) (cdr_ ((cast I64) x))))
       (F z ((cast A) (cdr_ ((cast I64) x))))))
+(defun ((match F) (Union (A B)) Z) (x z) 
+  (if (car_ ((cast I64) x)) 
+      (F ((cast B) (cdr_ ((cast I64) x))) z)
+      (F ((cast A) (cdr_ ((cast I64) x))) z)))
 
 (defun ((match F) (Union (A B C))) (x) 
   (if (= 0 (car_ ((cast I64) x)))
@@ -25,13 +41,18 @@
       (if (= 1 (car_ ((cast I64) x)))
           (F ((cast B) (cdr_ ((cast I64) x))))
           (F ((cast C) (cdr_ ((cast I64) x)))))))
-
 (defun ((match F) Z (Union (A B C))) (z x) 
   (if (= 0 (car_ ((cast I64) x)))
       (F z ((cast A) (cdr_ ((cast I64) x))))
       (if (= 1 (car_ ((cast I64) x)))
           (F z ((cast B) (cdr_ ((cast I64) x))))
           (F z ((cast C) (cdr_ ((cast I64) x)))))))
+(defun ((match F) (Union (A B C)) Z) (x z) 
+  (if (= 0 (car_ ((cast I64) x)))
+      (F ((cast A) (cdr_ ((cast I64) x))) z)
+      (if (= 1 (car_ ((cast I64) x)))
+          (F ((cast B) (cdr_ ((cast I64) x))) z)
+          (F ((cast C) (cdr_ ((cast I64) x))) z))))
 
 (defun (ucons T (List (Union U))) (x l) (cons ((Union U) x) l))
 

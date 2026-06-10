@@ -31,6 +31,9 @@ js: build/$(SRC).IR.fast transpile_js.py
 build/$(SRC).c: build/$(SRC).IR.fast transpile_c.py
 	python3 transpile_c.py build/$(SRC).IR.fast > build/$(SRC).c
 
-c: build/$(SRC).c
-	gcc -O3 build/$(SRC).c
+build/$(SRC).out: build/$(SRC).c
+	gcc -O3 build/$(SRC).c -o build/$(SRC).out
+
+ctest: build/$(SRC).out
+	build/$(SRC).out
 

@@ -7,16 +7,17 @@
 (defun ((then T)) () ((cast T) 0))
 (defun ((let NAME) ARGTYPE BODY) (NAME _) BODY)
 (defun ((let NAMEONE NAMETWO) ARGTYPEONE ARGTYPETWO  BODY) (NAMEONE NAMETWO _) BODY)
+(defun ((let NAMEONE NAMETWO NAMETHREE) ARGTYPEONE ARGTYPETWO ARGTYPETHREE BODY) (NAMEONE NAMETWO NAMETHREE _) BODY)
 (defun readall () (String (readall_impl (read))))
 
 (defun in (thing collection) (if collection (if (= thing (car collection)) 1 (in thing (cdr collection))) 0))
 
 (defun canGlomp (a b)
-  (if (in a "!@#$%^&*()><.,;':") 0
-     (if (in b "!@#$%^&*()><.,;':") 0 1)))
+  (if (in a "\\!@$%^&*()><.,;':") 0
+     (if (in b "\\!@$%^&*()><.,;':") 0 1)))
 
 (defun (combine Char (List String)) (char lexed) 
-  (if (|| (= char " ") (= char "\n"))
+  (if (|| (= char " ") (= char "\n") (= char "\t"))
     (cons "" (cons "#" lexed))
     (if (= char "(")
         (cons "" (cons "(" (cons "#" lexed)))
@@ -82,7 +83,7 @@
       (addToken (None) tree)
       (addToken token tree))))
 
-(defun parse (string) (treeFilter ((reduce addTokenChecked) (lex string) (St "$$"( None)))))
+(defun parse (string) ((treeFilter is$$) ((reduce addTokenChecked) (lex string) (St "$$"( None)))))
 
 (defun (is$$ None) (_) 0) 
 (defun (is$$ (Tree String)) (_) 0) 
@@ -95,22 +96,22 @@
 (defun (isHash (Tree String)) (_) 0) 
 (defun (isHash String) (s) (= s "#")) 
 
-(defun (treeFilter T) (t) ((Union (String None (Tree String))) t))
-(defun (treeFilter (Tree String)) (t) 
-  (if ((match is$$) (:child t))
-    ((match treeFilter) (:nextSibling t))
-    ((Union (String None (Tree String)))( St ((match treeFilter) (:child t)) ((match restFilter) (:nextSibling t))))))
+(defun ((treeFilter F) T) (t) ((Union (String None (Tree String))) t))
+(defun ((treeFilter F) (Tree String)) (t) 
+  (if ((match F) (:child t))
+    ((match (treeFilter F)) (:nextSibling t))
+    ((Union (String None (Tree String)))( St ((match (treeFilter F)) (:child t)) ((match (restFilter F)) (:nextSibling t))))))
 
-(defun (restFilter T) (t) ((Union (None (Tree String))) t))
-(defun (restFilter (Tree String)) (t) 
-  (if ((match is$$) (:child t))
-    ((match restFilter) (:nextSibling t))
-    ((Union (None (Tree String)))(St ((match treeFilter) (:child t)) ((match restFilter) (:nextSibling t))))))
+(defun ((restFilter F) T) (t) ((Union (None (Tree String))) t))
+(defun ((restFilter F) (Tree String)) (t) 
+  (if ((match F) (:child t))
+    ((match (restFilter F)) (:nextSibling t))
+    ((Union (None (Tree String)))(St ((match (treeFilter F)) (:child t)) ((match (restFilter F)) (:nextSibling t))))))
 
 (print (parse (readall)))
 
 // ok the situation
-// can't do it without parsing the tree structure first
+// cant do it without parsing the tree structure first
 // a node can be String, "#", None, or Tree
 // process a stream of nodes
 // starting state: result = [$$]
@@ -126,23 +127,33 @@
 STRUCT2(GlommingState, (Tree String), (Tree String), :result, :glommed)
 
 (defun (assertTree (Tree String)) (t) t)
-(defun (assertTree None) (t) (do (print "assertion failed, not tree") (St "" (None))))
+(defun (assertTree None) (t) (do (print "assertion failed, NOne not tree") (St "" (None))))
+(defun (assertTree String) (t) (do (print "assertion failed, String not tree") (St "" (None))))
 
+
+(defun (childglom None) (_) _)
+(defun (childglom String) (_) _)
+(defun (childglom (Tree String)) (t) (:result ((tailReduce glomOne) t (GlommingState (St "$$" (None)) (St "$$" (None))))))
 
 (defun (glomOne (Tree String) GlommingState) (tree state) 
-  (if ((match isHash) (:child tree))
+  ((let mappedchild tree state) 
+   ((bind childglom) (:child tree)) 
+   tree
+   state
+  ((then 
+  (if ((match isHash) mappedchild)
     (if ((match is$$) (:child (:glommed state)))
       state
       (GlommingState (St (:glommed state) (:result state)) (St "$$" (None))))
     (if ((match hasHash) (:nextSibling tree))
       (if ((match is$$) (:child (:glommed state)))
-	(GlommingState (St (:child tree) (:result state)) (:glommed state))
-	(GlommingState (:result state) (St (:child tree) (:glommed state))))
+	(GlommingState (St mappedchild (:result state)) (:glommed state))
+	(GlommingState (:result state) (St mappedchild (:glommed state))))
       (if ((match is$$) (:child (:glommed state)))
         (GlommingState 
 	  ((match assertTree) (:nextSibling (:result state)))
-	  (St (:child tree) (St (:child ((match assertTree) (:nextSibling tree))) (:glommed state))))
-        (GlommingState (:result state) (St (:child tree) (:glommed state)))))))
+	  (St mappedchild (St (:child (:result state)) (:glommed state))))
+        (GlommingState (:result state) (St mappedchild (:glommed state))))))))))
 
 
 
@@ -152,12 +163,17 @@ STRUCT2(GlommingState, (Tree String), (Tree String), :result, :glommed)
 (defun ((tailReduce F) String INIT) (t i) (do (print "tried to reduce a non tree node") i))
 (defun ((tailReduce F) (Tree T) INIT) (t i) (F t ((match (tailReduce F)) (:nextSibling t) i))) 
 
-(defun glom (t) (:result ((match (tailReduce glomOne)) t (GlommingState (St "$$" (None)) (St "$$" (None))))))
+(defun glom (t) ((treeFilter isHash) ((match assertTree) ((treeFilter is$$) (:result ((match (tailReduce glomOne)) t (GlommingState (St "$$" (None)) (St "$$" (None)))))))))
 
 
+(defun ((map F) None) (_) _)
+(defun ((map F) (Tree T)) (t) ((Tree T) ((bind F) (:child t)) ((bind (map F)) (:nextSibling t))))
   
   ((let code) (readall) ((then (do
+//				 (print code) (print "\n")
 
-(print (parse code))
-(print "\n")
-(print (glom (parse code)))))))
+//(print (parse code))
+//(print "\n")
+
+
+((map (\ X . (do (print X) (print "\n") X))) ((match assertTree) (glom (parse code))))))))
