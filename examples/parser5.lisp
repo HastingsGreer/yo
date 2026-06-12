@@ -1,5 +1,7 @@
 #include "prelude.lisp"
 #include "Union.lisp"
+#ifndef parser
+#define parser
 
 (defun (read) () (Char (read_)))
 (defun readall_impl (char) (if char (cons char (readall_impl (read))) (nil (Char 0) )))
@@ -83,7 +85,7 @@
       (addToken (None) tree)
       (addToken token tree))))
 
-(defun parse (string) ((treeFilter is$$) ((reduce addTokenChecked) (lex string) (St "$$"( None)))))
+(defun parse_ (string) ((treeFilter is$$) ((reduce addTokenChecked) (lex string) (St "$$"( None)))))
 
 (defun (is$$ None) (_) 0) 
 (defun (is$$ (Tree String)) (_) 0) 
@@ -108,7 +110,7 @@
     ((match (restFilter F)) (:nextSibling t))
     ((Union (None (Tree String)))(St ((match (treeFilter F)) (:child t)) ((match (restFilter F)) (:nextSibling t))))))
 
-(print (parse (readall)))
+(print (parse_ (readall)))
 
 // ok the situation
 // cant do it without parsing the tree structure first
@@ -127,7 +129,7 @@
 STRUCT2(GlommingState, (Tree String), (Tree String), :result, :glommed)
 
 (defun (assertTree (Tree String)) (t) t)
-(defun (assertTree None) (t) (do (print "assertion failed, NOne not tree") (St "" (None))))
+(defun (assertTree None) (t) (do (print "assertion failed, NOne not tree")  (car_ 0) (St "" (None))))
 (defun (assertTree String) (t) (do (print "assertion failed, String not tree") (St "" (None))))
 
 
@@ -168,12 +170,16 @@ STRUCT2(GlommingState, (Tree String), (Tree String), :result, :glommed)
 
 (defun ((map F) None) (_) _)
 (defun ((map F) (Tree T)) (t) ((Tree T) ((bind F) (:child t)) ((bind (map F)) (:nextSibling t))))
+
+(defun parse (s) (glom (parse_ (cat s " "))))
   
   ((let code) (readall) ((then (do
 //				 (print code) (print "\n")
 
-//(print (parse code))
+//(print (parse_ code))
 //(print "\n")
+#endif
 
 
-((map (\ X . (do (print X) (print "\n") X))) ((match assertTree) (glom (parse code))))))))
+((map (\ X . (do (print X) (print "\n") X))) ((match assertTree) (glom (parse_ code))))))))
+

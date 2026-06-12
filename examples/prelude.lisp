@@ -55,6 +55,7 @@
 (defun ((nilptr T)) () ((cast T) 0))
 (defun ((sentinel T)) () ((cast T) 0))
 (defun ((zero I64)) () ((cast I64) 0))
+(defun (zero T) (_) ((zero T)))
 (defun (nil T) (x) ((nilptr (List T))))
 (defun ((nil T)) () ((nilptr (List T))))
 
@@ -156,7 +157,10 @@
       (nil 0)))
 (defun range (n) (reverse (range_impl n)))
 
-(defun (sum (List T)) (l) (if l (+ (car l) (sum (cdr l))) ((zero T))))
+(defun sum (l) 
+  (if l 
+    (+ (car l) (sum (cdr l))) 
+    (zero (infer (car l)))))
 (defun (reverse_impl (List T) (List T)) (l acc) (if l (reverse_impl (cdr l) (cons (car l) acc)) acc))
 (defun (reverse T) (l) (reverse_impl l ((nilptr  T))))
 (defun (printdigits I64) (x) (+ 
