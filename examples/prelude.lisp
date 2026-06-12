@@ -3,6 +3,17 @@
 
 //todo stack structs
 
+(defun (read) () (Char (read_)))
+(defun readall_impl (char) (if char (cons char (readall_impl (read))) (nil (Char 0) )))
+
+(defun ((then T)) () ((cast T) 0))
+(defun ((let NAME) ARGTYPE BODY) (NAME _) BODY)
+(defun ((let NAMEONE NAMETWO) ARGTYPEONE ARGTYPETWO  BODY) (NAMEONE NAMETWO _) BODY)
+(defun ((let NAMEONE NAMETWO NAMETHREE) ARGTYPEONE ARGTYPETWO ARGTYPETHREE BODY) (NAMEONE NAMETWO NAMETHREE _) BODY)
+(defun readall () (String (readall_impl (read))))
+
+(defun in (thing collection) (if collection (if (= thing (car collection)) 1 (in thing (cdr collection))) 0))
+
 #define STRUCT2(NAME, ARG1, ARG2, ARG1NAME, ARG2NAME)              \
 (defun (NAME ARG1 ARG2) (a b) ((cast NAME) (cons_ ((cast I64) a) (cons_ ((cast I64) b) 0))))            \
 (defun (ARG1NAME NAME) (n) (car ((cast (List ARG1)) n)))           \

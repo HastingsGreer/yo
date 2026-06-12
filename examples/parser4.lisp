@@ -1,11 +1,6 @@
 #include "prelude.lisp"
 #include "Union.lisp"
 
-(defun (read) () (Char (read_)))
-(defun readall_impl (char) (if char (cons char (readall_impl (read))) (nil (Char 0) )))
-
-(defun readall () (String (readall_impl (read))))
-
 (defun (combine Char (List String)) (char lexed) 
   (if (|| (= char " ") (= char "\n"))
     (cons "" lexed)
