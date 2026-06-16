@@ -113,10 +113,13 @@ def dispatch_then_instantiate(call_sig, error_info=None):
     i, fsig, env = dispatch(call_sig, error_info)
 
     if program[i][0] == "header":
+        return_type = substitute(program[i][2], env)
         name = call_sig[0]
         if type(name) != str:
             name = mangle(name)
-        return_type = substitute(program[i][2], env)
+        elif name[0] == ":":
+            name = mangle((call_sig, return_type))
+
         memo[call_sig] = return_type, name
         return return_type, name
 
@@ -144,11 +147,7 @@ def dispatch_then_instantiate(call_sig, error_info=None):
 def mangle(tup):
     if type(tup) == tuple:
         return "<" + ":".join(map(mangle, tup)) + ">"
-    def charmangle(c:str):
-        if c.isalnum() or c in "$_":
-            return c
-        return "$$_" + str(ord(c))
-    return "".join(map(charmangle, tup))
+    return tup
 
 memo = {}
 methods = set()

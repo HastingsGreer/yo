@@ -60,6 +60,7 @@
 (defun ((F . G . H . I)) () (F (G (H (I)))))
 
 (defun ((\ X . BODY) ARGTYPE) (X) BODY)
+(defun ((\ X Y . BODY) ARGTYPE ARGTYPETWO) (X Y) BODY)
 (defun || (a b) (if a 1 b))
 (defun || (a b c) (if a 1 (if b 1 c)))
 

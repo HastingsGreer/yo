@@ -1,6 +1,7 @@
 import parse
 prelude = """
 #include "stdio.h"
+#include "lib.h"
 long sub(long a, long b) {return a - b;}
 long cells[100000000];
 long* bump = cells;
@@ -17,7 +18,7 @@ long  and(long a, long b) {return a & b;}
 long  imul(long a, long b) {return a * b;}
 long  shr(long a, long b) {return ((unsigned long) a) >> ((unsigned long) b);}
 long  print_(long a) {
-    printf("%c", a);
+    printf("%c", (char) a);
     return 0;
     }
 long read_() {
@@ -47,11 +48,13 @@ def jsprint(expr):
     return expr[0] + "(" + ", ".join(jsprint(e) for e in expr[1:]) + ")"
 for p in program:
     if p[0] == "defun":
-        print ( "long " + p[1] + "(" + ("long " if p[2] else "") + ", long ".join(map(jsprint, p[2])) + ");")
+        ret = "int" if p[1] == "main" else "long"
+        print ( ret + " " + p[1] + "(" + ("long " if p[2] else "") + ", long ".join(map(jsprint, p[2])) + ");")
 
 for p in program:
     if p[0] == "defun":
-        #print(p)
-        print ( "long " + p[1] + "(" + ("long " if p[2] else "") + ", long ".join(map(jsprint, p[2])) + ") { return " + 
-    jsprint(p[3]) + ";}")
+        ret = "int" if p[1] == "main" else "long"
+        print ( ret + " " + p[1] + "(" + ("long " if p[2] else "") + ", long ".join(map(jsprint, p[2])) + ") { return " +     jsprint(p[3]) + ";}")
+    if p[:3] == ("backend", "asm", "Linked"):
+        print("long " + p[3] + "(" + ",".join(f"long a{i}" for i in range(int(p[4]))) + ") {return " + p[3] + "_(" + ",".join(f"a{i}" for i in range(int(p[4]))) + ");}") 
 
