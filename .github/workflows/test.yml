@@ -20,4 +20,5 @@ jobs:
     - name: Test examples
       run: |
         make test SRC=examples/svg.lisp
-        make tear SRC=examples/primes.lisp
+        make test SRC=examples/primes.lisp
+        make test SRC=examples/sierpenski.lisp
