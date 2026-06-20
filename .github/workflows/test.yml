@@ -19,6 +19,8 @@ jobs:
         python-version: 3.11
     - name: Test examples
       run: |
-        make test SRC=examples/svg.lisp
+        make test SRC=examples/ffi.lisp
         make test SRC=examples/primes.lisp
         make test SRC=examples/sierpenski.lisp
+        make test SRC=examples/parser5.lisp
+        make test SRC=examples/calculus.lisp
