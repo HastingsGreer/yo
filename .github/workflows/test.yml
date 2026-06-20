@@ -1,4 +1,4 @@
-: cpu-tests
+name: test
 
 on:
   pull_request:
