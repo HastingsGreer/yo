@@ -3,7 +3,7 @@ prelude = """
 #include "stdio.h"
 #include "lib.h"
 long sub(long a, long b) {return a - b;}
-long cells[100000000];
+long cells[200000000];
 long* bump = cells;
 long  cons_(long a, long b) {
    long* ret = bump;

@@ -2,7 +2,7 @@
 
 build/$(SRC).in: $(SRC)
 	@mkdir -p build/examples
-	cpp $(SRC) > build/$(SRC).in
+	cpp -Wno-invalid-pp-token $(SRC) > build/$(SRC).in
 
 build/$(SRC).IR: build/$(SRC).in monomorphize.py
 	python3 monomorphize.py build/$(SRC).in > build/$(SRC).IR
@@ -14,7 +14,7 @@ build/$(SRC).s: compiler.py build/$(SRC).IR.fast
 	python3 compiler.py build/$(SRC).IR.fast > build/$(SRC).s
 
 build/examples/lib.o: examples/lib.c
-	gcc -o build/examples/lib.o -c examples/lib.c
+	gcc -O3 -o build/examples/lib.o -c examples/lib.c
 
 build/$(SRC): build/$(SRC).s build/examples/lib.o
 	gcc build/$(SRC).s build/examples/lib.o -o build/$(SRC)
@@ -38,7 +38,7 @@ build/$(SRC).c: build/$(SRC).IR.fast transpile_c.py
 	python3 transpile_c.py build/$(SRC).IR.fast > build/$(SRC).c
 
 build/$(SRC).out: build/$(SRC).c build/examples/lib.o
-	gcc -O3 build/$(SRC).c build/examples/lib.o -Iexamples -o build/$(SRC).out
+	gcc -O3 -flto build/$(SRC).c build/examples/lib.o -Iexamples -o build/$(SRC).out
 
 ctest: build/$(SRC).out
 	build/$(SRC).out

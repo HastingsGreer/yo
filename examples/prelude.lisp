@@ -13,6 +13,7 @@
 (defun readall () (String (readall_impl (read))))
 
 (defun in (thing collection) (if collection (if (= thing (car collection)) 1 (in thing (cdr collection))) 0))
+(defun (len (List T)) (l) (if l (+ 1 (len (cdr l))) 0))
 
 #define STRUCT2(NAME, ARG1, ARG2, ARG1NAME, ARG2NAME)              \
 (defun (NAME ARG1 ARG2) (a b) ((cast NAME) (cons_ ((cast I64) a) (cons_ ((cast I64) b) 0))))            \
@@ -54,6 +55,7 @@
 (defun ((F . G) X) (x) (F (G x)))
 (defun ((F . G . H) X) (x) (F (G (H x))))
 (defun ((F . G . H . I) X) (x) (F (G (H (I x)))))
+(defun ((F . G . H . I . J) X) (x) (F (G (H (I (J x))))))
 
 (defun ((F . G)) () (F (G)))
 (defun ((F . G . H)) () (F (G (H))))
@@ -61,8 +63,10 @@
 
 (defun ((\ X . BODY) ARGTYPE) (X) BODY)
 (defun ((\ X Y . BODY) ARGTYPE ARGTYPETWO) (X Y) BODY)
-(defun || (a b) (if a 1 b))
-(defun || (a b c) (if a 1 (if b 1 c)))
+(defun || (a b) (if a a b))
+(defun || (a b c) (if a a (if b b c)))
+(defun && (a b) (if a b a))
+(defun && (a b c) (if a (if b c b) a))
 
 (defun ((nilptr T)) () ((cast T) 0))
 (defun ((sentinel T)) () ((cast T) 0))
@@ -81,6 +85,14 @@
 (defun (list T T T T) (a b c d) (cons a (cons b (cons c (cons d ((nil T)))))))
 (defun (list T T T T T) (a b c d e) (cons a (cons b (cons c (cons d (cons e ((nil T))))))))
 (defun (list T T T T T T) (a b c d e f) (cons a (cons b (cons c (cons d (cons e (cons f((nil T)))))))))
+
+(defun (+ X Y Z) (x y z) (+ x (+ y z)))
+(defun (+ X Y Z A) (x y z a) (+ x (+ y z a)))
+(defun (+ X Y Z A B) (x y z a b) (+ x (+ y z a b)))
+(defun (* X Y Z) (x y z) (* x (* y z)))
+(defun (* X Y Z A) (x y z a) (* x (* y z a)))
+(defun (* X Y Z A B) (x y z a b) (* x (* y z a b)))
+(defun (* X Y Z A B C) (x y z a b c) (* x (* y z a b c)))
 
 (defun ((map F) (List T)) (l) 
   (if l 
@@ -128,8 +140,9 @@
 (defun cat_impl (a b) (if a (cons (car a) (cat_impl (cdr a) b)) b))
 (defun (cat (List T) (List T)) (a b) (cat_impl a b))
 (defun (cat String String) (a b) (String (cat (:chars a) (:chars b))))
+(defun (+ String String) (a b) (cat a b))
 
-(defun - (x) (sub 0 x))
+(defun - (x) (- 0 x))
 
 
 (defun (- I64 I64) (a b) (sub a b))
@@ -173,6 +186,7 @@
   (if l 
     (+ (car l) (sum (cdr l))) 
     (zero (infer (car l)))))
+(defun (sum (List (List T))) (l) (sum ((map sum) l)))
 (defun (reverse_impl (List T) (List T)) (l acc) (if l (reverse_impl (cdr l) (cons (car l) acc)) acc))
 (defun (reverse T) (l) (reverse_impl l ((nilptr  T))))
 (defun (printdigits I64) (x) (+ 
@@ -182,10 +196,11 @@
 (defun (print I64) (x) (do 
 			 (if (= (negative? x) 1) (print_ 45) 0)
 			 (printdigits (abs x)) 
-			 (print_ 32)))
+			 ))
+(defun printsp (x) (do (print x) (print " ")))
 (defun (print (List T)) (t) (do 
 			      (print_ 40) 
-			      ((map print) t) 
+			      ((map printsp) t) 
 			      (print_ 41)
 			      (print_ 10)
 			      ))
@@ -216,6 +231,7 @@ STRUCT1(String, (List Char), :chars)
 
 (defun (print String) (s) (do 
 			    ((map print) (:chars s)) 0))
+(defun println (x) (do (print x) (print "\n")))
 
 
 #endif

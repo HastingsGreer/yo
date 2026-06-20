@@ -20,4 +20,4 @@
 
 
 // (defun main () (print (list (negative? (- 1)) (negative? 0) (negative? 1) (* 100 100))))
-#endif#
+#endif
