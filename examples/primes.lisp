@@ -21,7 +21,7 @@
 
 (defun zero_ (x) 0)
 (defun (Consint I64) (n) ((cast Consint) ((map zero_) (range n))))
-(defun (len (List T)) (l) (if l (+ 1 (len (cdr l))) 0))
+
 (defun (I64 Consint) (n) (len ((cast (List I64)) n)))
 (defun (dec Consint) (n) ((cast Consint) (cdr ((cast (List I64)) n))))
 (defun (inc Consint) (n) ((cast Consint) (cons 0 ((cast (List I64)) n))))
