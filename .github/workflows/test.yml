@@ -8,13 +8,19 @@ on:
 jobs:
   test-linux:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        backend:
+          - ctest
+          - test
+          - jstest
 
     steps:
     - uses: actions/checkout@v5
     - name: Test examples
       run: |
-        make test SRC=examples/ffi.lisp
-        make test SRC=examples/primes.lisp
-        make test SRC=examples/sierpenski.lisp
-        make test SRC=examples/parser5.lisp
-        make test SRC=examples/calculus.lisp
+        make ${{ matrix.backend }}  SRC=examples/ffi.lisp
+        make ${{ matrix.backend }} SRC=examples/primes.lisp
+        make ${{ matrix.backend }} SRC=examples/sierpenski.lisp
+        make ${{ matrix.backend }} SRC=examples/parser5.lisp
+        make ${{ matrix.backend }} SRC=examples/calculus.lisp
