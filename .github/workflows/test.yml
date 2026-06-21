@@ -8,15 +8,9 @@ on:
 jobs:
   test-linux:
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 5
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.11
+    - uses: actions/checkout@v5
     - name: Test examples
       run: |
         make test SRC=examples/ffi.lisp
