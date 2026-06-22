@@ -171,5 +171,5 @@ STRUCT2(GlommingState, (Tree String), (Tree String), :result, :glommed)
 #endif
 
 
-((map (\ X . (do (print X) (print "\n") X))) ((match assertTree) (glom (parse_ code))))))))
+((map (\ X . (do (print X) (print "\n") X))) ((match assertTree) (glom (parse code))))))))
 
