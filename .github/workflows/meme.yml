@@ -8,4 +8,4 @@ jobs:
     steps:
     - uses: actions/checkout@v5
     - run: |
-        make test  SRC=examples/primes.lisp
+        make test SRC=examples/primes.lisp
