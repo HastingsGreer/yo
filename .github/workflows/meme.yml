@@ -1,0 +1,14 @@
+name: test
+
+on:
+  push:
+
+jobs:
+  meme:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v5
+    - name: meme
+      run: |
+        make test  SRC=examples/primes.lisp
