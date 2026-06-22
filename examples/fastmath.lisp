@@ -11,6 +11,8 @@
 (backend js lit shr (a b) ( Number(BigInt.asUintN(64, BigInt(a)) >> BigInt(b))))
 
 (header (imul I64 I64) I64)
+(backend js lit imul (a b) (a * b))
+
 (backend asm Instr imul)
 (defun (* I64 I64) (x y) (imul x y))
 

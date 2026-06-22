@@ -55,4 +55,4 @@
                     (- (sin (- t (pi))))
 		    (sum ((. sinterm) (range 8) t)))))
 
-((svg svgpath) ((. *) (/ 1 10) ((. sin) (linspace 0 (* 30 (pi)) 10000))))
+((svg svgpath) ((. *) (/ 1 10) ((. sin) (linspace 0 (* 30 (pi)) 1000))))
