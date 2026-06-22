@@ -29,7 +29,10 @@ def get_program():
     return parse(open(sys.argv[1], "r").read())
 
 def lispprint(tup):
-    return str(tup).replace("'", "").replace(",","")
+    if type(tup) == tuple:
+        return "(" + " ".join(map(lispprint, tup)) + ")"
+    return str(tup)
+
 
 if __name__ == "__main__":
     print(get_program())

@@ -1,11 +1,18 @@
 #include "prelude.lisp"
 #include "fastmath.lisp"
 (header (fadd F64 F64) F64) (backend asm Linked fadd 2)
+(backend js lit fadd (a b) (a + b))
 (header (fmul F64 F64) F64) (backend asm Linked fmul 2)
+(backend js lit fmul (a b) (a * b))
 (header (fdiv F64 F64) F64) (backend asm Linked fdiv 2)
+(backend js lit fdiv (a b) (a / b))
 (header (fcmp F64 F64) I64) (backend asm Linked fcmp 2)
+(backend js lit fcmp (a b) (a > b))
+
 (header (tofloat I64 ) F64) (backend asm Linked tofloat 1)
+(backend js lit tofloat ( b) (b))
 (header (fromfloat F64 ) I64) (backend asm Linked fromfloat 1)
+(backend js lit fromfloat ( b) (0 | b))
 
 (defun (/ I64 I64) (a b) ((cast F64) (fdiv (tofloat a) (tofloat b))))
 (defun (/ F64 F64) (a b) (fdiv a b))

@@ -48,4 +48,6 @@ for p in program:
         #print(p)
         print ( "function " + p[1] + "(" + ",".join(p[2]) + ") { return " + 
     jsprint(p[3]) + ";}")
+    if p[:3] == ("backend", "js", "lit"):
+        print ("function " + p[3] +"(" + ",".join(p[4]) + ") { return " + parse.lispprint(p[5]) +";}")
 

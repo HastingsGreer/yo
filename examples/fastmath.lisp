@@ -8,6 +8,7 @@
 
 (header (shr I64 I64) I64)
 (backend asm Instr shr)
+(backend js lit shr (a b) ( Number(BigInt.asUintN(64, BigInt(a)) >> BigInt(b))))
 
 (header (imul I64 I64) I64)
 (backend asm Instr imul)
