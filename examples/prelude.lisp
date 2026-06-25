@@ -6,14 +6,22 @@
 (defun (read) () (Char (read_)))
 (defun readall_impl (char) (if char (cons char (readall_impl (read))) (nil (Char 0) )))
 
-(defun ((then T)) () ((cast T) 0))
-(defun ((let NAME) ARGTYPE BODY) (NAME _) BODY)
-(defun ((let NAMEONE NAMETWO) ARGTYPEONE ARGTYPETWO  BODY) (NAMEONE NAMETWO _) BODY)
-(defun ((let NAMEONE NAMETWO NAMETHREE) ARGTYPEONE ARGTYPETWO ARGTYPETHREE BODY) (NAMEONE NAMETWO NAMETHREE _) BODY)
+(defun ((then T)) () ((cast (ThenClause T)) 0))
+(defun ((then A B)) () ((cast (ThenClause A B)) 0))
+(defun ((then A B C)) () ((cast (ThenClause A B C)) 0))
+(defun ((then A B C D)) () ((cast (ThenClause A B C D)) 0))
+(defun ((then A B C D E)) () ((cast (ThenClause A B C D E)) 0))
+(defun ((then A B C D E F)) () ((cast (ThenClause A B C D E F)) 0))
+(defun ((then A B C D E F G)) () ((cast (ThenClause A B C D E F G)) 0))
+(defun ((then A B C D E F G H)) () ((cast (ThenClause A B C D E F G H)) 0))
+(defun ((then A B C D E F G H I)) () ((cast (ThenClause A B C D E F G H I)) 0))
+(defun ((let NAME) ARGTYPE (ThenClause BODY)) (NAME _) BODY)
+(defun ((let NAMEONE NAMETWO) ARGTYPEONE ARGTYPETWO  (ThenClause BODY)) (NAMEONE NAMETWO _) BODY)
+(defun ((let NAMEONE NAMETWO NAMETHREE) ARGTYPEONE ARGTYPETWO ARGTYPETHREE (ThenClause BODY)) (NAMEONE NAMETWO NAMETHREE _) BODY)
 (defun readall () (String (readall_impl (read))))
 
 (defun in (thing collection) (if collection (if (= thing (car collection)) 1 (in thing (cdr collection))) 0))
-(defun (len (List T)) (l) (if l (+ 1 (len (cdr l))) 0))
+(defun len (l) (if l (+ 1 (len (cdr l))) 0))
 
 #define STRUCT2(NAME, ARG1, ARG2, ARG1NAME, ARG2NAME)              \
 (defun (NAME ARG1 ARG2) (a b) ((cast NAME) (cons_ ((cast I64) a) (cons_ ((cast I64) b) 0))))            \
@@ -63,6 +71,8 @@
 
 (defun ((\ X . BODY) ARGTYPE) (X) BODY)
 (defun ((\ X Y . BODY) ARGTYPE ARGTYPETWO) (X Y) BODY)
+(defun ((\ X Y Z . BODY) ARGTYPE ARGTYPETWO ARGTYPETHREE) (X Y Z) BODY)
+(defun ((\ X Y Z A . BODY) ARGTYPE ARGTYPETWO ARGTYPETHREE ATFOUR ) (X Y Z A) BODY)
 (defun || (a b) (if a a b))
 (defun || (a b c) (if a a (if b b c)))
 (defun && (a b) (if a b a))
@@ -216,8 +226,11 @@ STRUCT1(String, (List Char), :chars)
 
 (defun (print Char) (char) (print_ (:charcode char)))
 (defun (= Char Char) (a b) (= (:charcode a) (:charcode b)))
-(defun (= String Char) (s c) (= (:charcode (car (:chars s))) (:charcode c)))
-(defun (= Char String) (c s) (= (:charcode (car (:chars s))) (:charcode c)))
+(defun (= String Char) (s c) 
+  (if (= (len s) 1) 
+      (= (:charcode (car (:chars s))) (:charcode c)) 
+      0))
+(defun (= Char String) (c s) (= s c))
 (defun (= String String) (a b) 
   (if a
     (if b

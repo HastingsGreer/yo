@@ -163,13 +163,8 @@ STRUCT2(GlommingState, (Tree String), (Tree String), :result, :glommed)
 
 (defun parse (s) (glom (parse_ (cat s " "))))
   
-  ((let code) (readall) ((then (do
-//				 (print code) (print "\n")
+((let code) (readall) ((then (do
+((map (\ X . (do (print X) (print "\n") X))) ((match assertTree) (parse code)))))))
 
-//(print (parse_ code))
-//(print "\n")
 #endif
-
-
-((map (\ X . (do (print X) (print "\n") X))) ((match assertTree) (glom (parse code))))))))
 

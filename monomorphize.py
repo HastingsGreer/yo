@@ -153,12 +153,19 @@ memo = {}
 methods = set()
 dispatch_then_instantiate(("main",))
 
+def string_of_type(s):
+    if len(s) == 0:
+        return "0"
+    return ("cons_", str(ord(s[0])), string_of_type(s[1:]))
+
 def remove_casts_infer(s_expr):
     if type(s_expr) == tuple and len(s_expr) > 0:
         s_expr = list(s_expr)
         if type(s_expr[0]) == str:
             if "<cast" == s_expr[0][:5]:
                 return remove_casts_infer(s_expr[1])
+            if "<typenameof" == s_expr[0][:11]:
+                return string_of_type(s_expr[0][12:-1])
             if "infer" == s_expr[0]:
                 return 0
             return (s_expr[0],) + tuple(remove_casts_infer(t) for t in s_expr[1:])
