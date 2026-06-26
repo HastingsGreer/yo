@@ -120,6 +120,8 @@
 				       o
 				       ))
 
+(defun zip (a b) (if (&& a b) (cons (list (car a) (car b)) (zip (cdr a) (cdr b))) (infer (list (list (car a) (car b)))))) 
+
 (defun ((. F) A) (a) (F a))
 (defun ((. F) (List A)) (l)
   (if l

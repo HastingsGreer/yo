@@ -1,9 +1,6 @@
 #include "prelude.lisp"
 #include "ffi.lisp"
 
-(defun normalizedRange (n) ((. /) ((. +) (/ 1 2) (range n)) n))
-
-(defun linspace (a b n) ((. +) a ((. *) (- b a) (normalizedRange n))))
 
 (defun zip (a b) (if (&& a b) (cons (list (car a) (car b)) (zip (cdr a) (cdr b))) (infer (list (list (car a) (car b)))))) 
 

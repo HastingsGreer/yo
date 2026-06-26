@@ -34,6 +34,7 @@
 (defun (- X Y) (a b) ((promote -) a b))
 (defun (+ X Y) (a b) ((promote +) a b))
 (defun (> X Y) (a b) ((promote >) a b))
+(defun (< Y X) (a b) ((promote >) a b))
 
 (defun (printTail F64 I64) (k digits)
   (if digits
@@ -48,4 +49,7 @@
                          (print ".")
 			 (printTail (abs (fracpart a)) 8)
 			 ))
+(defun normalizedRange (n) ((. /) ((. +) (/ 1 2) (range n)) n))
+
+(defun linspace (a b n) ((. +) a ((. *) (- b a) (normalizedRange n))))
 (println (/ 22 7))
