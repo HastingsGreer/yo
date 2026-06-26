@@ -35,6 +35,21 @@ if not ("main",) in signatures:
     program = tuple(program)
     signatures = [expand_sig(p) for p in program]
 
+def floppy_match(tree):
+    yeeps = [p for p in signatures if p and p[0] == tree[0]]
+    for i in range(1, len(tree)):
+        newyeeps = [p for p in yeeps if p and len(p) > i and len(tree) > i and p[i] == tree[i]]
+        if len(newyeeps):
+            yeeps = newyeeps
+    if len(yeeps):
+        return yeeps
+    yeeps = [p for p in signatures if p and p[0] and p[0][0] == tree[0][0]]
+    for i in range(1, len(tree)):
+        newyeeps = [p for p in yeeps if len(p[0]) > i and len(tree[0]) > i and p[0][i] == tree[0][i]]
+        if len(newyeeps):
+            yeeps = newyeeps
+    return yeeps
+
 
 
 
@@ -65,8 +80,13 @@ def dispatch_impl(tree):
 def dispatch(tree, error_info):
     candidates, specific = dispatch_impl(tree)
     if len(candidates) == 0:
-        compile_error("error_info was" + lispprint(error_info) + "\n" + 
-        "No type matches" + lispprint(tree))
+        errprint(lispprint(error_info) + "\n" + 
+        "No type matches " + lispprint(tree))
+
+        errprint("candidates:")
+        [errprint(lispprint(p)) for p in floppy_match(tree)]
+
+        compile_error("")
 
     if len(specific) != 1:
         print(lispprint(error_info) + "\n Finally, matching methods:", file=sys.stderr)

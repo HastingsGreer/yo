@@ -53,20 +53,38 @@ ENUM3( Tree, Sexpr, (List Tree), Leaf, String, Lparen, Unit)
 (defun (deepen (List Tree)) (treelist)
   (if treelist
     (match (car treelist) ((then
-       Sexpr listcar (cons (Sexpr (deepen listcar)) (cdr treelist))
+       Sexpr listcar //(cons (Sexpr (deepen listcar)) (cdr treelist))
+                   (if listcar
+		       (match (car listcar) ((then
+				     Sexpr _ (cons (Sexpr (deepen listcar )) (cdr treelist))
+				     Leaf _ (cons (Sexpr (deepen listcar)) (cdr treelist))
+				     Lparen _ (cons (Sexpr ((nil Tree))) treelist)))
+			    ((set listcar) listcar ((set treelist) treelist (Unit)))
+			    ) 
+		       (cons (Sexpr (deepen listcar)) (cdr treelist)))
        Leaf listcar (cons (Sexpr ((nil Tree))) treelist)
        Lparen listcar (cons (Sexpr ((nil Tree))) treelist)))
      ((set treelist) treelist (Unit)))
   (cons (Sexpr ((nil Tree))) treelist)))
 
-(defun (add_any_token (List Tree) String) (treelist token)
+(defun (add_any_token String (List Tree)) ( token treelist)
+  (do
   (if (= token "(")
     (add_token treelist (Lparen))
     (if (= token ")")
       (deepen treelist)
       (add_token treelist (Leaf token)))))
+  )
+
+(defun metacdr (t)
+  (match t ((then
+	 Sexpr l (Sexpr ((map metacdr) (cdr l)))
+	 Leaf l t
+	 Lparen l t))
+     ((set t) t (Unit))))
 
 
+(defun parse (s)
+((metacdr . car) ((reduce add_any_token) (lex s) ((nil Tree)))))
 
-
-(print (add_token (add_token (add_token (deepen (list (Leaf "hi") (Leaf "bye"))) (Leaf "bdfsaa")) (Lparen)) (Leaf "hi")))
+(print (parse "((a) (a))" ))

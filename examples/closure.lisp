@@ -5,6 +5,9 @@
 (defun (print Unit) () 0)
 (header ((typenameof TYPE)) String)
 
+(defun ((cases A B C D E F)) () ((cast (CasesClause A B C D E F)) 0))
+(defun ((cases A B C D E F G H I)) () ((cast (CasesClause A B C D E F G H I)) 0))
+
 
 
 (defun ((set NAME) VTYPE SDICT) (value dict) 
@@ -50,7 +53,7 @@
 (defun (NAMEONE TYPEONE) (payload) ((cast TYPENAME) (cons_ 0 ((cast I64) payload))))                                \
 (defun (NAMETWO) () (NAMETWO (Unit)))                                                                               \
 (defun (NAMETWO TYPETWO) (payload) ((cast TYPENAME) (cons_ 1 ((cast I64) payload))))                                \
-(defun (match TYPENAME (ThenClause NAMEONE ARGONE BODYONE NAMETWO ARGTWO BODYTWO) CLOSURETYPE) (value _ closure)    \
+(defun (match TYPENAME (CasesClause NAMEONE ARGONE BODYONE NAMETWO ARGTWO BODYTWO) CLOSURETYPE) (value _ closure)    \
   (if (= 0 (car_ ((cast I64) value)))                                                                               \
     ((apply BODYONE) ((set ARGONE) ((cast TYPEONE) (cdr_ ((cast I64) value))) closure))                             \
     ((apply BODYTWO) ((set ARGTWO) ((cast TYPETWO) (cdr_ ((cast I64) value))) closure))                             \
@@ -65,7 +68,7 @@
 (defun (NAMETWO TYPETWO) (payload) ((cast TYPENAME) (cons_ 1 ((cast I64) payload))))            \
 (defun (NAMETHREE) () (NAMETHREE (Unit)))                                                           \
 (defun (NAMETHREE TYPETHREE) (payload) ((cast TYPENAME) (cons_ 2 ((cast I64) payload))))            \
-(defun (match TYPENAME (ThenClause NAMEONE ARGONE BODYONE NAMETWO ARGTWO BODYTWO NAMETHREE ARGTHREE BODYTHREE) CLOSURETYPE)   \
+(defun (match TYPENAME (CasesClause NAMEONE ARGONE BODYONE NAMETWO ARGTWO BODYTWO NAMETHREE ARGTHREE BODYTHREE) CLOSURETYPE)   \
   (value _ closure)                       \
   (if (= 0 (car_ ((cast I64) value)))                                                                               \
     ((apply BODYONE) ((set ARGONE) ((cast TYPEONE) (cdr_ ((cast I64) value))) closure))                             \
@@ -77,7 +80,7 @@
 
 ENUM2(HoSi,  Ho, I64, Si, String)
 
-(print (match (Si "poo") ((then 
+(print (match (Si "poo") ((cases 
 			    Ho _ 0 
 			    Si _ 1))))
 
@@ -97,7 +100,7 @@ ENUM2(HoSi,  Ho, I64, Si, String)
 (print ((apply y) ((set y) 4 ((set x) 3 (Unit)))))
 (print 
   ((let x) 100 ((then
-		  (match (Si "poo") ((then 
+		  (match (Si "poo") ((cases 
 			    Ho _ 0 
 			    Si _ x))
 			 ((set x) x (Unit)))))))
