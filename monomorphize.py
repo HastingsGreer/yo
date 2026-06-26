@@ -83,7 +83,7 @@ def dispatch(tree, error_info):
     candidates, specific = dispatch_impl(tree)
     if len(candidates) == 0:
         errprint(lispprint(error_info) + "\n" + 
-        "No type matches " + lispprint(tree))
+        "No function matches " + lispprint(tree))
 
         errprint("candidates:")
         [errprint(lispprint(p)) for p in floppy_match(tree)]
