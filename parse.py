@@ -18,7 +18,7 @@ def parse(program_file):
 
 
     program_file = program_file.split("\n")
-    program_file = "\n".join([p.split("//")[0] for p in program_file])
+    program_file = "\n".join([p.split("//")[0].split(";;")[0] for p in program_file])
 
 
     program_file = re.sub(r"([\!λ\\/@*{}\.\^,&:'\"<>\|A-Za-z+_=\-\?0-9\$]+)", r"'\1',", program_file)
