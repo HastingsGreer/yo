@@ -17,6 +17,8 @@ def errprint(*x):
 
 def expand_sig(p):
     if p[0] == "defun":
+        if len(p) != 4:
+            compile_error("wrong number of arguments to defun: " + lispprint(p))
         if type(p[1]) == str:
             return (p[1],) + ("A", "B", "C", "D")[:len(p[2])]
         return p[1]

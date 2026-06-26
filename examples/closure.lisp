@@ -42,10 +42,6 @@
 		    ))
 
 
-(defun ((app_doit ARGS) ARGS) )
-(defun ((app_uncons ARGS)))
-(defun ((app_impl)    ))
-(defun ((app    )    ))
 
 
 #define ENUM2(TYPENAME, NAMEONE, TYPEONE, NAMETWO, TYPETWO)                                                         \
