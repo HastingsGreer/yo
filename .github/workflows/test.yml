@@ -22,5 +22,5 @@ jobs:
         make ${{ matrix.backend }}  SRC=examples/ffi.lisp
         make ${{ matrix.backend }} SRC=examples/primes.lisp
         make ${{ matrix.backend }} SRC=examples/sierpenski.lisp
-        make ${{ matrix.backend }} SRC=examples/parser5.lisp
+        make ${{ matrix.backend }} SRC=examples/parser7.lisp
         make ${{ matrix.backend }} SRC=examples/calculus.lisp
