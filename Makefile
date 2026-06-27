@@ -13,9 +13,9 @@ build/$(SRC).IR.fast: build/$(SRC).IR eliminator.py
 build/$(SRC).s: compiler.py build/$(SRC).IR.fast
 	python3 compiler.py build/$(SRC).IR.fast > build/$(SRC).s
 
-build/examples/lib.o: examples/lib.c
+build/examples/lib.o: examples/lib.c examples/lib.h
 	gcc -O3 -o build/examples/lib.o -c examples/lib.c
-build/examples/gc.o: examples/gc.c
+build/examples/gc.o: examples/gc.c examples/gc.h
 	gcc -O3 -o build/examples/gc.o -c examples/gc.c
 
 build/$(SRC): build/$(SRC).s build/examples/lib.o build/examples/gc.o
