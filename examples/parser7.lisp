@@ -2,7 +2,7 @@
 #include "closure.lisp"
 
 (defun (combine Char (List String)) (char lexed) 
-  (if (|| (= char " ") (= char "\n"))
+  (if (|| (= char " ") (= char "\n") (= char "\t"))
     (cons "" lexed)
     (if (= char "(")
         (cons "" (cons "(" lexed))

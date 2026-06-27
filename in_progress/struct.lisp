@@ -1,4 +1,4 @@
-
+#include "prelude.lisp"
 
 (header ((cast X) Y) Y)
 
@@ -15,4 +15,6 @@
 
 (header (:2 (struct A B C)) C)
 
+
+(print_ (:2 ((struct I64 I64 I64) 1 2 3)))
 

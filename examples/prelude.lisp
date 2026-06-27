@@ -174,6 +174,7 @@
 (defun (abs I64) (x) (if (= (negative? x) 0) x (- 0 x)))
 (defun = (a b) (if (- a b) 0 1))
 (defun != (a b) (if (= a b) 0 1))
+(defun not (a) (if a 0 1))
 (defun negative?_impl  (x minx) 
   (if (= x 0) 
     0 
