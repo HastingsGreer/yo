@@ -2,7 +2,6 @@
 #include "ffi.lisp"
 
 
-(defun zip (a b) (if (&& a b) (cons (list (car a) (car b)) (zip (cdr a) (cdr b))) (infer (list (list (car a) (car b)))))) 
 
 (defun svghead ()
   (print "<svg version='1.1'
@@ -43,8 +42,8 @@
      (^ t (+ 1 (* n 2))) 
      (/ 1 (fac (+ 1 (* n 2)))))) 
 
-(defun (pi) () (/ 314159265358979 
-		  100000000000000))
+(defun (pi) () (/ 3141592
+		  1000000))
 
 (defun sin (t) (if (> 0 t) 
 		 (- (sin (- t)))

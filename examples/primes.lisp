@@ -80,5 +80,5 @@ STRUCT2( (Signedof T), T, T, first, second)
 
 
 (defun cons_negative? (x) ((Signedof Consint) (Consint x)))
-(defun main () (print ((map I64) ((map I64) ((filter isprime) ((map cons_negative?) (range 40)))))))
+(defun main () (print ((map I64) ((map I64) ((filter isprime) ((map cons_negative?) (range 90)))))))
 

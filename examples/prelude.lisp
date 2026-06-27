@@ -41,6 +41,10 @@
 #define TRUE 1
 #define FALSE 0
 
+(backend asm Linked cons_ 2)
+(backend asm Linked car_ 1)
+(backend asm Linked cdr_ 1)
+
 (header ((cast Y) X) Y)
 (header (sub I64 I64) I64)
 (backend asm Instr sub)

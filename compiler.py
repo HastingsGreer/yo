@@ -13,6 +13,8 @@ def iprint(*x):
 
 mungemap = {}
 def munge(name):
+    if name == "main":
+        return "progmain"
     if not "<" in name:
         return name
     if name in mungemap:
@@ -178,6 +180,14 @@ arg_stack_offsets = [f"-{8 * (i + 1)}(%rbp)" for i in range(6)]
 functions = [
     If(),
     Function(
+        "main",
+        2,
+        [
+            "call    setupgc@PLT",
+        ],
+    ),
+    
+    Function(
         "read_",
         0,
         [
@@ -207,29 +217,6 @@ functions = [
             "movq $0, %rax",
         ],
     ),
-    Function(
-        "cons_",
-        2,
-        [
-            "subq    $32, %rsp",
-            "andq    $0xFFFFFFFFFFFFFFF0, %rsp",
-            "movq    %rdi, -24(%rbp)",
-            "movq    %rsi, -32(%rbp)",
-            "movl    $16, %edi",
-            "call    malloc@PLT",
-            "movq    %rax, -8(%rbp)",
-            "movq    -24(%rbp), %rdx",
-            "movq    -8(%rbp), %rax",
-            "movq    %rdx, (%rax)",
-            "movq    -8(%rbp), %rax",
-            "leaq    8(%rax), %rdx",
-            "movq    -32(%rbp), %rax",
-            "movq    %rax, (%rdx)",
-            "movq    -8(%rbp), %rax",
-        ],
-    ),
-    Function("car_", 1, ["movq    -8(%rbp), %rax", "movq    (%rax), %rax"]),
-    Function("cdr_", 1, ["movq    -8(%rbp), %rax", "movq    8(%rax), %rax"]),
 ]
 
 
@@ -280,6 +267,7 @@ for f in functions:
     f.print()
 
 print("""
+
 	.section	.rodata
 .LC0:
 	.string	"%c"
