@@ -1,6 +1,9 @@
 #ifndef PRELUDE
 #define PRELUDE
 
+#include "ffi.lisp"
+#include "closure.lisp"
+
 //todo stack structs
 
 (defun (read) () (Char (read_)))
@@ -37,6 +40,14 @@
 (defun (ARG1NAME NAME) (n) (car ((cast (List ARG1)) n)))           \
 (defun (ARG2NAME NAME) (n) (car (cdr ((cast (List ARG2)) n)))) \
 (defun (ARG3NAME NAME) (n) (car (cdr (cdr ((cast (List ARG3)) n)))))
+
+
+#define STRUCT4(NAME, ARG1, ARG2, ARG3, ARG4, ARG1NAME, ARG2NAME, ARG3NAME, ARG4NAME)              \
+(defun (NAME ARG1 ARG2 ARG3 ARG4) (a b c d) ((cast NAME) (cons_ ((cast I64) a) (cons_ ((cast I64) b) (cons_ ((cast I64) c) (cons_ ((cast I64) d) 0))))))            \
+(defun (ARG1NAME NAME) (n) (car ((cast (List ARG1)) n)))           \
+(defun (ARG2NAME NAME) (n) (car (cdr ((cast (List ARG2)) n)))) \
+(defun (ARG3NAME NAME) (n) (car (cdr (cdr ((cast (List ARG3)) n))))) \
+(defun (ARG4NAME NAME) (n) (car (cdr (cdr (cdr ((cast (List ARG4)) n))))))
 
 #define TRUE 1
 #define FALSE 0
@@ -206,14 +217,15 @@
 (defun (sum (List (List T))) (l) (sum ((map sum) l)))
 (defun (reverse_impl (List T) (List T)) (l acc) (if l (reverse_impl (cdr l) (cons (car l) acc)) acc))
 (defun (reverse T) (l) (reverse_impl l ((nilptr  T))))
-(defun (printdigits I64) (x) (+ 
-			 (if (divide x 10) (printdigits (divide x 10)) 0)
-			 (print_ (+ 48 (mod x 10)))  
+(defun (stringdigits I64) (x) (+ 
+			 (if (divide x 10) (stringdigits (divide x 10)) "")
+			 (String (list (Char (+ 48 (mod x 10)))))
 		))
-(defun (print I64) (x) (do 
-			 (if (= (negative? x) 1) (print_ 45) 0)
-			 (printdigits (abs x)) 
+(defun (string I64) (x) (+ 
+			 (if (= (negative? x) 1) "-" "")
+			 (stringdigits (abs x)) 
 			 ))
+(defun (print T) (t) (print (string t)))
 (defun printsp (x) (do (print x) (print " ")))
 (defun (print (List T)) (t) (do 
 			      (print_ 40) 
@@ -233,6 +245,7 @@ STRUCT1(String, (List Char), :chars)
 
 (defun (print Char) (char) (print_ (:charcode char)))
 (defun (= Char Char) (a b) (= (:charcode a) (:charcode b)))
+(defun (> Char Char) (a b) (> (:charcode a) (:charcode b)))
 (defun (= String Char) (s c) 
   (if (= (len s) 1) 
       (= (:charcode (car (:chars s))) (:charcode c)) 
@@ -249,9 +262,21 @@ STRUCT1(String, (List Char), :chars)
       0
       1)))
 
+(defun (> String String) (a b) 
+  (if a
+    (if b
+      (if (> (car a) (car b))
+	(> (cdr a) (cdr b))
+	0)
+      0)
+    (if b
+      0
+      1)))
+
 (defun (print String) (s) (do 
 			    ((map print) (:chars s)) 0))
 (defun println (x) (do (print x) (print "\n")))
+(defun (< T T) (a b) (> b a))
 
 
 #endif

@@ -2,53 +2,40 @@
 #include "ffi.lisp"
 
 
+(defun svgpt (p) (+
+  (string (car p)) 
+   ", " 
+  ((string . car . cdr) p) 
+  " "))
 
-(defun svghead ()
-  (print "<svg version='1.1'
-            width='600' height='600'
-            viewBox='-.1 -.1 1.2 1.2'
-            xmlns='http://www.w3.org/2000/svg'> " ))
-
-(defun svgpt (p) (do 
-  (print (car p)) 
-  (print ", ") 
-  ((print . car . cdr) p) 
-  (print " ")))
-
-(defun svgpath (pts) (do (print "
-<polyline stroke-width='.002' fill='none' stroke='black' points='")
-((map svgpt) 
+(defun svgpath (pts) (+ "
+<polyline stroke-width='.002' fill='none' stroke='black' points='"
+((reduce +) ((map svgpt) 
  ((. (\ x . (+ (/ 1 2) (/ x 2)))) 
   (zip (linspace (- 1) 1 (len pts)) 
-       ((. -) pts))))
-(print "'/>
-")))
+       ((. -) pts)))) "")
+ "'/>
+"))
 
-(defun (^ B E) (base exp) 
-  (if exp 
-      (* base (^ base (- exp 1))) 
-      (+ 1 ((zero B)))))
-(defun fac (n) 
-  (if n 
-      (* n (fac (- n 1))) 
-      1))
+(defun svghead ()
+  "<svg version='1.1'
+	    width='600' height='600'
+	    viewBox='-.1 -.1 1.2 1.2'
+	    xmlns='http://www.w3.org/2000/svg'> " )
+(defun svgtail () "</svg>")
 
-(defun svgtail () (print "</svg>"))
+(defun (svg X) (x) (+ (svghead) x (svgtail))) 
 
-(defun ((svg F) X) (x) (do (svghead) (F x) (svgtail))) 
+(defun sinplot (m) (write_file (svg (svgpath ((. *) (/ 1 4) ((. sin) (linspace 0 (* m (pi)) 10))))) "out.svg"))
 
-(defun sinterm (n t) 
-  (* (^ (- 1) n) 
-     (^ t (+ 1 (* n 2))) 
-     (/ 1 (fac (+ 1 (* n 2)))))) 
+(defun fib (n) (if (< 0 n) (+ (fib (- n 1)) (fib (- n 2))) 1))
 
-(defun (pi) () (/ 3141592
-		  1000000))
+(defun sinplotpause (m) (do (println "boo") (fib 1) (sinplot m)))
 
-(defun sin (t) (if (> 0 t) 
-		 (- (sin (- t)))
-		 (if (> t (pi))
-                    (- (sin (- t (pi))))
-		    (sum ((. sinterm) (range 8) t)))))
+((. sinplotpause ) (range 1))
+(write_file (svg "") "i.svg")
+(sinplot 3)
+(string (/ 1 2))
 
-((svg svgpath) ((. *) (/ 1 10) ((. sin) (linspace 0 (* 30 (pi)) 1000))))
+
+

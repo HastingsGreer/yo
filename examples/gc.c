@@ -132,12 +132,6 @@ Reference garbage_collect(Reference args, Reference state) {
       thing_free(r);
     }
   }
-  // for (int i = 2; i < 200; i++) {
-  //        Reference r = _get_slot(i);
-  //        printf("%i  |  ", get(r)->in_use);
-  //        print_thing(_get_slot(i));
-  //        printf("\n");
-  // }
   return thing_alloc();
 }
 

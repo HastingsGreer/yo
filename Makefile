@@ -1,6 +1,6 @@
 .DELETE_ON_ERROR:
 
-build/$(SRC).in: $(SRC)
+build/$(SRC).in: $(SRC) examples/prelude.lisp examples/ffi.lisp examples/closure.lisp examples/fastmath.lisp
 	@mkdir -p build/examples
 	cpp -Wno-invalid-pp-token $(SRC) > build/$(SRC).in
 

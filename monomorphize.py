@@ -104,7 +104,12 @@ def walk_tree(s_expr, env, error_info=None):
     if type(s_expr) == tuple:
         fname = s_expr[0]
         method_stack = [m.split("function:")[0].strip() for m in error_info.split("method:")]
-        first_encounter = 1 == sum([m == method_stack[-1] for m in method_stack])
+        n_encounters = sum([m == method_stack[-1] for m in method_stack])
+        first_encounter = n_encounters == 1
+        
+        if (len(method_stack) > 200):
+            errprint(error_info)
+            compile_error("infinite recursion during inference")
 
         if fname == "if" and len(s_expr) != 4:
             errprint(error_info)

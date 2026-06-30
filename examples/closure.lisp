@@ -1,3 +1,5 @@
+#ifndef CLOSURE_LISP
+#define CLOSURE_LISP
 
 #include "prelude.lisp"
 
@@ -92,6 +94,8 @@ ENUM2(HoSi,  Ho, I64, Si, String)
 (defun ((conslist (A B C D))) () ((sentinel (A (B (C (D Unit)))))))
 (defun ((conslist (A B C D E))) () ((sentinel (A (B (C (D (E Unit))))))))
 (defun ((conslist (A B C D E F))) () ((sentinel (A (B (C (D (E (F Unit)))))))))
+
+#endif
 
 (print ((apply y) ((set y) 4 ((set x) 3 (Unit)))))
 (print 
