@@ -159,6 +159,7 @@ class If:
         iprint(l2 + ":")
         iprint("movq ", "%rbp, %rsp")
         iprint("subq    $" + str(-restore) + ", %rsp")
+        stck[0] = restore
         return ret
 
 

@@ -1,5 +1,6 @@
 #include "prelude.lisp"
 #include "ffi.lisp"
+#include "Union.lisp"
 
 
 (defun svgpt (p) (+
@@ -26,16 +27,17 @@
 
 (defun (svg X) (x) (+ (svghead) x (svgtail))) 
 
-(defun sinplot (m) (write_file (svg (svgpath ((. *) (/ 1 4) ((. sin) (linspace 0 (* m (pi)) 10))))) "out.svg"))
-
-(defun fib (n) (if (< 0 n) (+ (fib (- n 1)) (fib (- n 2))) 1))
-
-(defun sinplotpause (m) (do (println "boo") (fib 1) (sinplot m)))
-
-((. sinplotpause ) (range 1))
-(write_file (svg "") "i.svg")
-(sinplot 3)
-(string (/ 1 2))
+(defun sinplot (m) (write_file (svg (svgpath ((. *) (/ 1 4) ((. sin) (linspace 0 (* m (pi)) 100))))) "out.svg"))
 
 
+STRUCT2(Lineplot, (List F64), (List F64), :xs, :ys)
+STRUCT2(Scatterplot, (List F64), (List F64), :xs, :ys)
+
+(defun (svg (List (Union Lineplot Scatterplot))) (figs) 
+  (+ 
+    (svghead) 
+    ((reduce +) ((map (match show)) figs) "")
+    (svgtail)
+    )
+  )
 
