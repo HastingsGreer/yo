@@ -1,3 +1,5 @@
+import sys
+import trees
 import parse
 
 program = parse.get_program()
@@ -74,24 +76,54 @@ def flatten(tup):
         ret = ret + t
     return ret
 
+def doinline(sexpr, inlineme):
+    if type(sexpr) == str:
+        return sexpr
+    args = [doinline(a, inlineme) for a in sexpr[1:]]
+    if sexpr[0] in inlineme:
+        inlined = inlineme[sexpr[0]]
+        sexpr = trees.substitute(inlined[3], {iargname:arg for (iargname, arg) in zip(inlined[2], args)})
+        return doinline(sexpr, inlineme)
+    else:
+        return (sexpr[0],) + tuple(args)
+
 
 def inline(program):
+    inlineme = {}
+    dontreturn = set()
     for i, definition in enumerate(program):
         if definition[0] == "defun":
             defun, name, args, body = definition
-            if not (contains(body, "if")):
+            if not (contains(body, name) or name == "main"):
                 oneone = True
                 for c in args:
                     if contains(body, c) != 1:
                         oneone = False
+                oneone = oneone and len(str(body)) < 120
                 if oneone:
-                    print(definition)
+                    print(definition, file=sys.stderr)
+                    print(contains(program, name), file=sys.stderr)
+                    inlineme[name] = definition
+                    dontreturn.add(i)
+    ret = []
+    for i, definition in enumerate(program):
+        if definition[0] == "defun":
+            if i not in dontreturn:
+                defun, name, args, body = definition
+                ret.append((defun, name, args, doinline(body, inlineme)))
+
+        else:
+            ret.append(definition)
+    return ret
+
+
 
 
 #going = True
 #while going:
 #    going, program = inline(program)
-#inline(program)
+program = inline(program)
+print(len(program), file=sys.stderr)
 
             
 [print(parse.lispprint(p)) for p in program]

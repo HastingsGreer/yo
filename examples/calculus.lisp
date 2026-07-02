@@ -1,7 +1,7 @@
 #include "prelude.lisp"
 (defun (print X_) (_) (print "X "))
 (defun (print Y_) (_) (print "Y "))
-(defun (print X) (_) (print X))
+(defun (string X) (_) (string X))
 (defun (print (Mul X Y)) (_) (do 
     (print "(") (print ((sentinel X)))
     (print "* ") 

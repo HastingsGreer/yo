@@ -38,7 +38,7 @@
   
 
 (defun (pprint Tree I64) (t indent) 
- (if (negative? (- (len t) 60))
+ (if (negative? (- (len t) 40))
   (fprint t)
   (match t ((cases
     Sexpr l (do

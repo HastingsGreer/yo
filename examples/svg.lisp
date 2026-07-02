@@ -41,3 +41,4 @@ STRUCT2(Scatterplot, (List F64), (List F64), :xs, :ys)
     )
   )
 
+(sinplot 6)

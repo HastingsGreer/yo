@@ -40,7 +40,7 @@ def jsprint(expr):
     if type(expr) == str:
         return expr
     if expr[0] == "if":
-        return jsprint(expr[1]) + " ? " + jsprint(expr[2]) + " : " + jsprint(expr[3])
+        return "(" + jsprint(expr[1]) + ") ? (" + jsprint(expr[2]) + ") : (" + jsprint(expr[3]) + ")"
     return expr[0] + "(" + ", ".join(jsprint(e) for e in expr[1:]) + ")"
 
 for p in program:

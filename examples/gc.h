@@ -10,7 +10,8 @@
 void callstack();
 #define callstack_assert(x)                                                    \
   if (!(x)) {                                                                  \
-    callstack();                                                               \
+    fflush(stdout); \
+    printf("\n"); callstack();                                                               \
     assert(x);                                                                 \
   }
 #endif

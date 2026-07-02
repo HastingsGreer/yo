@@ -1,6 +1,9 @@
 #include "prelude.lisp"
 #include "closure.lisp"
 
+#ifndef parser7
+#define parser7
+
 (defun (combine Char (List String)) (char lexed) 
   (if (|| (= char " ") (= char "\n") (= char "\t"))
     (cons "" lexed)
@@ -31,5 +34,7 @@ ENUM2(Tree,
 	(cons (cons (Leaf token) (car treelist)) (cdr treelist)))))
 
 (defun parse (s) ((car . car) ((reduce add_token) (lex s) (list ((nil Tree))))))
+
+#endif
 
 (print (parse "((b) (a) ())" ))

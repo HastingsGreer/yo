@@ -266,17 +266,27 @@ STRUCT1(String, (List Char), :chars)
   (if a
     (if b
       (if (> (car a) (car b))
-	(> (cdr a) (cdr b))
-	0)
+	1
+	(if (< (car a) (car b))
+	  0
+	  (> (cdr a) (cdr b))))
       0)
     (if b
-      0
-      1)))
+      1
+      0)))
 
 (defun (print String) (s) (do 
 			    ((map print) (:chars s)) 0))
 (defun println (x) (do (print x) (print "\n")))
 (defun (< T T) (a b) (> b a))
-
+(defun print (a b) (do (print a) (print b)))
+(defun print (a b c) (do (print a) (print b) (print c)))
+(defun print (a b c d) (do (print a) (print b) (print c) (print d)))
+(defun qprint (x) (do (print_ 34) (print x) (print_ 34) (print " ")))
+(defun (print (List String)) (ls) (do 
+				    (print "(")
+				    ((map qprint) ls)
+				    (print ")")))
+(defun (flatten (List (List T))) (l) ((reduce cat) l ((nil T))))
 
 #endif
